@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1568157813 source:/ice/Downloads/D1_20193_Base/main.cpp
+	<GL/glut.h>
+	<stdlib.h>
+	<stdio.h>
+	<ctype.h>
+	<math.h>
+	"extras.h"
+
+1566924478 /ice/Downloads/D1_20193_Base/extras.h
+
