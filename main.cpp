@@ -26,6 +26,7 @@ float rotationX = 0.0, rotationY = 0.0;
 int   last_x, last_y;
 int   width, height;
 bool game = false;
+float xBarra = 0.0;
 float xBolinha = 0.0;
 
 
@@ -157,40 +158,40 @@ void desenhaBarra()
 {
 
     vertice vetorNormal;
-    vertice barraFaceTampa[4] = {{-0.25, -0.75, 0.125},
-        {0.25, -0.75, 0.125},
-        {0.25, -0.625, 0.125},
-        {-0.25, -0.625, 0.125}
+    vertice barraFaceTampa[4] = {{-0.25 + xBarra, -0.75, 0.125},
+        {0.25 + xBarra, -0.75, 0.125},
+        {0.25 + xBarra, -0.625, 0.125},
+        {-0.25 + xBarra, -0.625, 0.125}
     };
 
-    vertice barraFaceBase[4] = {{-0.25, -0.625, 0.0625},
-        {-0.25, -0.75, 0.0625},
-        {0.25, -0.75, 0.0625},
-        {0.25, -0.625, 0.0625}
+    vertice barraFaceBase[4] = {{-0.25 + xBarra, -0.625, 0.0625},
+        {-0.25 + xBarra, -0.75, 0.0625},
+        {0.25 + xBarra, -0.75, 0.0625},
+        {0.25 + xBarra, -0.625, 0.0625}
     };
 
-    vertice barraFaceDireita[4] = {{0.25, -0.75, 0.0625},
-        {0.25, -0.625, 0.0625},
-        {0.25, -0.625, 0.125},
-        {0.25, -0.75, 0.125}
+    vertice barraFaceDireita[4] = {{0.25 + xBarra, -0.75, 0.0625},
+        {0.25 + xBarra, -0.625, 0.0625},
+        {0.25 + xBarra, -0.625, 0.125},
+        {0.25 + xBarra, -0.75, 0.125}
     };
 
-    vertice barraFaceSuperior[4] = {{0.25, -0.625, 0.0625},
-        {0.25, -0.625, 0.125},
-        {-0.25, -0.625, 0.125},
-        {-0.25, -0.625, 0.0625}
+    vertice barraFaceSuperior[4] = {{0.25 + xBarra, -0.625, 0.0625},
+        {0.25 + xBarra, -0.625, 0.125},
+        {-0.25 + xBarra, -0.625, 0.125},
+        {-0.25 + xBarra, -0.625, 0.0625}
     };
 
-    vertice barraFaceEsquerda[4] = {{-0.25, -0.75, 0.0625},
-        {-0.25, -0.625, 0.0625},
-        {-0.25, -0.625, 0.125},
-        {-0.25, -0.75, 0.125}
+    vertice barraFaceEsquerda[4] = {{-0.25 + xBarra, -0.75, 0.0625},
+        {-0.25 + xBarra, -0.625, 0.0625},
+        {-0.25 + xBarra, -0.625, 0.125},
+        {-0.25 + xBarra, -0.75, 0.125}
     };
 
-    vertice barraFaceInferior[4] = {{0.25, -0.75, 0.0625},
-        {0.25, -0.75, 0.125},
-        {-0.25, -0.75, 0.125},
-        {-0.25, -0.75, 0.0625}
+    vertice barraFaceInferior[4] = {{0.25 + xBarra, -0.75, 0.0625},
+        {0.25 + xBarra, -0.75, 0.125},
+        {-0.25 + xBarra, -0.75, 0.125},
+        {-0.25 + xBarra, -0.75, 0.0625}
     };
 
     triangle t[6] = {{barraFaceTampa[0], barraFaceTampa[1], barraFaceTampa[2]},
@@ -457,17 +458,28 @@ void keyboard (unsigned char key, int x, int y)
     case 27:
         exit(0);
         break;
+    case 32:
+        game = true;
+        break;
     }
 }
 
 // Motion callback
 void motion(int x, int y )
 {
-    rotationX += (float) (y - last_y);
-    rotationY += (float) (x - last_x);
+    if(!game) {
+        rotationX += (float) (y - last_y);
+        rotationY += (float) (x - last_x);
 
-    last_x = x;
-    last_y = y;
+        last_x = x;
+        last_y = y;
+    }
+    else {
+        if(xBarra >= -1 && xBarra <= 1) {
+            xBarra = (float)x/250 - 2;
+        }
+    }
+
 }
 
 // Mouse callback
