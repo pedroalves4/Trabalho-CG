@@ -29,6 +29,7 @@ int   last_x, last_y;
 int   width, height;
 int game = 0;
 int projecao = 0;
+int liberaRotacao = 0;
 float xBarra = 0.0;
 float xBolinha = 0.0;
 
@@ -431,7 +432,7 @@ void display(void)
     {
         gluLookAt (.0, -2.0, zdist, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
         glPushMatrix();
-        if(game%2==0)
+        if(game%2==0 && liberaRotacao%2==0)
         {
             glRotatef( rotationY, 0.0, 1.0, 0.0 );
             rotacaoY = rotationY;
@@ -496,6 +497,11 @@ void keyboard (unsigned char key, int x, int y)
     case 'p':
         projecao++;
         break;
+    case 'c':
+    if(projecao%2==0 && game%2==0){
+        liberaRotacao++;
+    }
+        break;
     }
 }
 
@@ -504,7 +510,7 @@ void motion(int x, int y )
 {
     if(game%2 == 0)
     {
-        if(projecao%2 == 0)
+        if(projecao%2 == 0 && liberaRotacao%2==0)
         {
             rotationX += (float) (y - last_y);
             rotationY += (float) (x - last_x);
