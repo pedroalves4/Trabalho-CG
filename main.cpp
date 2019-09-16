@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <math.h>
+#include <GLFW/glfw3.h>
 
 #include "extras.h"
 
@@ -23,9 +24,11 @@ public:
 /// Globals
 float zdist = 3.0;
 float rotationX = 0.0, rotationY = 0.0;
+float rotacaoX = 0.0, rotacaoY = 0.0;
 int   last_x, last_y;
 int   width, height;
-bool game = false;
+int game = 0;
+int projecao = 0;
 float xBarra = 0.0;
 float xBolinha = 0.0;
 
@@ -423,13 +426,42 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    gluLookAt (0.0, 0.0, zdist, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
-    glPushMatrix();
-    glRotatef( rotationY, 0.0, 1.0, 0.0 );
-    glRotatef( rotationX, 1.0, 0.0, 0.0 );
-    drawObject();
-    glPopMatrix();
+    if(projecao%2==0)
+    {
+        gluLookAt (.0, -2.0, zdist, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+        glPushMatrix();
+        if(game%2==0)
+        {
+            glRotatef( rotationY, 0.0, 1.0, 0.0 );
+            rotacaoY = rotationY;
+            glRotatef( rotationX, 1.0, 0.0, 0.0 );
+            rotacaoX = rotationX;
+        }
+        else
+        {
+            glRotatef( rotacaoY, 0.0, 1.0, 0.0 );
+            glRotatef( rotacaoX, 1.0, 0.0, 0.0 );
+        }
+
+        drawObject();
+        glPopMatrix();
+    }
+
+
+    if(projecao%2 != 0)
+    {
+
+        gluLookAt (0.0, 0.0, zdist, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+        glPushMatrix();
+        glRotatef( 0, 0.0, 1.0, 0.0 );
+        glRotatef( 0, 1.0, 0.0, 0.0 );
+        drawObject();
+        glPopMatrix();
+
+    }
+
 
     glutSwapBuffers();
 }
@@ -459,7 +491,10 @@ void keyboard (unsigned char key, int x, int y)
         exit(0);
         break;
     case 32:
-        game = true;
+        game++;
+        break;
+    case 'p':
+        projecao++;
         break;
     }
 }
@@ -467,15 +502,21 @@ void keyboard (unsigned char key, int x, int y)
 // Motion callback
 void motion(int x, int y )
 {
-    if(!game) {
-        rotationX += (float) (y - last_y);
-        rotationY += (float) (x - last_x);
+    if(game%2 == 0)
+    {
+        if(projecao%2 == 0)
+        {
+            rotationX += (float) (y - last_y);
+            rotationY += (float) (x - last_x);
 
-        last_x = x;
-        last_y = y;
+            last_x = x;
+            last_y = y;
+        }
     }
-    else {
-        if(xBarra >= -1 && xBarra <= 1) {
+    else
+    {
+        if(xBarra >= -1 && xBarra <= 1)
+        {
             xBarra = (float)x/250 - 2;
         }
     }
