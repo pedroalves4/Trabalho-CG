@@ -21,6 +21,7 @@ public:
     vertice v[3];
 };
 
+
 class vetor {
     public:
         vertice v1;
@@ -428,6 +429,7 @@ void desenhaBolinha()
     glPopMatrix();
 }
 
+
 void desenhaSeta() {
     vetorSeta->v1.x = xSeta;
     glPushMatrix();
@@ -558,6 +560,26 @@ void keyboard (unsigned char key, int x, int y)
     }
 }
 
+void specialKeys(int key, int x, int y)
+{
+    switch(key)
+    {
+        case GLUT_KEY_F12:
+            janela++;
+            if(janela%2==0)
+            {
+                glutReshapeWindow(1000, 600);
+                glutPositionWindow(100, 100);
+
+            } else{
+
+                glutFullScreen();
+            }
+        break;
+    }
+    glutPostRedisplay();
+}
+
 // Motion callback
 void motion(int x, int y )
 {
@@ -629,6 +651,7 @@ int main(int argc, char** argv)
     glutMotionFunc( motion );
     glutPassiveMotionFunc( motionBarra );
     glutKeyboardFunc(keyboard);
+    glutSpecialFunc( specialKeys );
     glutSetCursor(GLUT_CURSOR_NONE);
     glutIdleFunc(idle);
     glutMainLoop();
