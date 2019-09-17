@@ -20,3 +20,14 @@
 
 1568678913 /ice/Downloads/Trabalho-CG/extras.h
 
+1568679903 source:/ice/CG/Trabalho-CG/main.cpp
+	<GL/glut.h>
+	<stdlib.h>
+	<stdio.h>
+	<ctype.h>
+	<math.h>
+	<GLFW/glfw3.h>
+	"extras.h"
+
+1568678941 /ice/CG/Trabalho-CG/extras.h
+

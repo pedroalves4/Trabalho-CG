@@ -21,6 +21,10 @@ public:
     vertice v[3];
 };
 
+class vetor {
+    vertice v2;
+};
+
 /// Globals
 float zdist = 3.0;
 float rotationX = 0.0, rotationY = 0.0;
@@ -32,6 +36,7 @@ int projecao = 0;
 int liberaRotacao = 0;
 float xBarra = 0.0;
 float xBolinha = 0.0;
+float yBolinha = -0.56;
 
 
 /// Functions
@@ -406,10 +411,18 @@ void desenhaBolinha()
 {
     setColor(1.0, 0.5, 0.1);
     glPushMatrix();
-    glTranslatef(xBolinha, -0.56, 0.125);
+    glTranslatef(xBolinha, yBolinha, 0.125);
     glutSolidSphere(0.0625, 20, 20);
     glPopMatrix();
 }
+
+void desenhaSeta() {
+    glBegin(GL_LINES);
+        glVertex3f(xBolinha, yBolinha, 0.125);
+        glVertex3f(xBolinha + 0.25, yBolinha + 0.25, 0.125);
+    glEnd();
+}
+
 void drawObject()
 {
     desenhaPlataforma();
@@ -417,6 +430,7 @@ void drawObject()
     desenhaBarrinhasDeBater();
 
     desenhaBolinha();
+    desenhaSeta();
 
 }
 
@@ -519,11 +533,14 @@ void motion(int x, int y )
             last_y = y;
         }
     }
-    else
-    {
-        if(xBarra >= -1 && xBarra <= 1)
+}
+
+void motionBarra(int x, int y){
+    if(game%2 == 1) {
+        if(xBarra >= -1.0 && xBarra <= 1.0)
         {
             xBarra = (float)x/250 - 2;
+            xBolinha = (float)x/250 - 2;
         }
     }
 
@@ -561,6 +578,7 @@ int main(int argc, char** argv)
     glutReshapeFunc(reshape);
     glutMouseFunc( mouse );
     glutMotionFunc( motion );
+    glutPassiveMotionFunc( motionBarra );
     glutKeyboardFunc(keyboard);
     glutSetCursor(GLUT_CURSOR_NONE);
     glutIdleFunc(idle);
