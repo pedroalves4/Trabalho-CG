@@ -546,20 +546,6 @@ void keyboard (unsigned char key, int x, int y)
         case 't':
             vetorMovimentoBolinha = vetorSeta;
             break;
-
-
-        case 'i':
-            janela++;
-            if(janela%2==0)
-            {
-                glutReshapeWindow(1000, 600);
-                glutPositionWindow(100, 100);
-
-            } else{
-
-                glutFullScreen();
-            }
-            break;
     }
 }
 
