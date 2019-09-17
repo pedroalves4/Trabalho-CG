@@ -22,7 +22,14 @@ public:
 };
 
 class vetor {
-    vertice v2;
+    public:
+        vertice v1;
+        vertice v0;
+
+    vetor() {
+        v0.x = 0.0;
+        v0.y = 0.0;
+    }
 };
 
 /// Globals
@@ -37,6 +44,9 @@ int liberaRotacao = 0;
 float xBarra = 0.0;
 float xBolinha = 0.0;
 float yBolinha = -0.56;
+float xSeta = 0.25;
+vetor* vetorSeta = new vetor();
+vetor* vetorMovimentoBolinha = new vetor();
 
 
 /// Functions
@@ -417,10 +427,14 @@ void desenhaBolinha()
 }
 
 void desenhaSeta() {
-    glBegin(GL_LINES);
-        glVertex3f(xBolinha, yBolinha, 0.125);
-        glVertex3f(xBolinha + 0.25, yBolinha + 0.25, 0.125);
-    glEnd();
+    vetorSeta->v1.x = xSeta;
+    glPushMatrix();
+        setColor(0.0, 1.0, 0.3);
+        glBegin(GL_LINES);
+            glVertex3f(xBolinha, yBolinha, 0.125);
+            glVertex3f(xBolinha + vetorSeta->v1.x, yBolinha + 0.25, 0.125);
+        glEnd();
+    glPopMatrix();
 }
 
 void drawObject()
@@ -481,6 +495,11 @@ void display(void)
     glutSwapBuffers();
 }
 
+void moveBolinha() {
+    xBolinha += vetorMovimentoBolinha->v1.x;
+    yBolinha += vetorMovimentoBolinha->v1.y;
+}
+
 void idle ()
 {
     glutPostRedisplay();
@@ -502,20 +521,22 @@ void keyboard (unsigned char key, int x, int y)
 
     switch (tolower(key))
     {
-    case 27:
-        exit(0);
-        break;
-    case 32:
-        game++;
-        break;
-    case 'p':
-        projecao++;
-        break;
-    case 'c':
-    if(projecao%2==0 && game%2==0){
-        liberaRotacao++;
-    }
-        break;
+        case 27:
+            exit(0);
+            break;
+        case 32:
+            game++;
+            break;
+        case 'p':
+            projecao++;
+            break;
+        case 'c':
+            if(projecao%2==0 && game%2==0){
+                liberaRotacao++;
+            }
+        case 't':
+            vetorMovimentoBolinha = vetorSeta;
+            break;
     }
 }
 
@@ -537,7 +558,7 @@ void motion(int x, int y )
 
 void motionBarra(int x, int y){
     if(game%2 == 1) {
-        if(xBarra >= -1.0 && xBarra <= 1.0)
+        if(xBarra >= -0.75 && xBarra <= 0.75)
         {
             xBarra = (float)x/250 - 2;
             xBolinha = (float)x/250 - 2;
@@ -549,19 +570,26 @@ void motionBarra(int x, int y){
 // Mouse callback
 void mouse(int button, int state, int x, int y)
 {
-    if ( button == GLUT_LEFT_BUTTON && state == GLUT_DOWN )
-    {
-        last_x = x;
-        last_y = y;
+    if(game%2 == 0) {
+        if ( button == GLUT_LEFT_BUTTON && state == GLUT_DOWN )
+        {
+            last_x = x;
+            last_y = y;
+        }
+        if(button == 3) // Scroll up
+        {
+            xSeta += 0.05;
+        }
+        if(button == 4) // Scroll Down
+        {
+            xSeta -= 0.05;
+        }
     }
-    if(button == 3) // Scroll up
-    {
-        zdist+=1.0f;
-    }
-    if(button == 4) // Scroll Down
-    {
-        zdist-=1.0f;
-    }
+   /* else {
+        if( button ==  GLUT_LEFT_BUTTON) {
+            vetorMovimentoBolinha = vetorSeta;
+        }
+    }*/
 }
 
 
@@ -583,5 +611,6 @@ int main(int argc, char** argv)
     glutSetCursor(GLUT_CURSOR_NONE);
     glutIdleFunc(idle);
     glutMainLoop();
+    moveBolinha();
     return 0;
 }
