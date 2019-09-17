@@ -32,6 +32,7 @@ class vetor {
     }
 };
 
+
 /// Globals
 float zdist = 3.0;
 float rotationX = 0.0, rotationY = 0.0;
@@ -41,6 +42,7 @@ int   width, height;
 int game = 0;
 int projecao = 0;
 int liberaRotacao = 0;
+int janela = 0;
 float xBarra = 0.0;
 float xBolinha = 0.0;
 float yBolinha = -0.56;
@@ -446,6 +448,7 @@ void desenhaSeta() {
     glPopMatrix();
 }
 
+
 void drawObject()
 {
     desenhaPlataforma();
@@ -467,7 +470,7 @@ void display(void)
 
     if(projecao%2==0)
     {
-        gluLookAt (.0, -2.0, zdist, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+        gluLookAt (.0, -2.0, 1.8, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
         glPushMatrix();
         if(game%2==0 && liberaRotacao%2==0)
         {
@@ -525,6 +528,7 @@ void keyboard (unsigned char key, int x, int y)
 
     switch (tolower(key))
     {
+
         case 27:
             exit(0);
             break;
@@ -540,6 +544,20 @@ void keyboard (unsigned char key, int x, int y)
             }
         case 't':
             vetorMovimentoBolinha = vetorSeta;
+            break;
+
+
+        case 'i':
+            janela++;
+            if(janela%2==0)
+            {
+                glutReshapeWindow(1000, 600);
+                glutPositionWindow(100, 100);
+
+            } else{
+
+                glutFullScreen();
+            }
             break;
     }
 }
@@ -560,9 +578,12 @@ void motion(int x, int y )
     }
 }
 
-void motionBarra(int x, int y){
-    if(game%2 == 1) {
-        if(xBarra >= -0.75 && xBarra <= 0.75)
+void motionBarra(int x, int y)
+{
+    if(game%2 == 1)
+    {
+        if(xBarra >= -1.0 && xBarra <= 1.0)
+
         {
             xBarra = (float)x/250 - 2;
             xBolinha = (float)x/250 - 2;
