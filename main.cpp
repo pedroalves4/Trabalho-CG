@@ -44,7 +44,7 @@ int liberaRotacao = 0;
 float xBarra = 0.0;
 float xBolinha = 0.0;
 float yBolinha = -0.56;
-float xSeta = 0.25;
+float xSeta = 0.15;
 vetor* vetorSeta = new vetor();
 vetor* vetorMovimentoBolinha = new vetor();
 
@@ -94,6 +94,15 @@ void CalculaNormal(triangle t, vertice *vn)
     vn->x /= len;
     vn->y /= len;
     vn->z /= len;
+}
+
+void atualizaVetorMovimentoBolinha() {
+     vetorMovimentoBolinha->v1.y = 0.15*0.15 - vetorMovimentoBolinha->v1.x;
+}
+
+void moveBolinha() {
+    xBolinha += vetorMovimentoBolinha->v1.x;
+    yBolinha
 }
 
 void desenhaPlataforma()
@@ -490,14 +499,9 @@ void display(void)
         glPopMatrix();
 
     }
-
-
     glutSwapBuffers();
-}
-
-void moveBolinha() {
-    xBolinha += vetorMovimentoBolinha->v1.x;
-    yBolinha += vetorMovimentoBolinha->v1.y;
+    moveBolinha();
+    atualizaVetorMovimentoBolinha();
 }
 
 void idle ()
@@ -611,6 +615,5 @@ int main(int argc, char** argv)
     glutSetCursor(GLUT_CURSOR_NONE);
     glutIdleFunc(idle);
     glutMainLoop();
-    moveBolinha();
     return 0;
 }
