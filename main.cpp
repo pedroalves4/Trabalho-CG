@@ -25,11 +25,21 @@ public:
 class vetor {
     public:
         vertice v1;
-        vertice v0;
+};
 
-    vetor() {
-        v0.x = 0.0;
-        v0.y = 0.0;
+class vetor2D {
+    public:
+        vetor vX;
+        vetor vY;
+        vetor vR;
+
+    vetor2D() {
+        vR.v1.x = vX.v1.x + vY.v1.x;
+        vR.v1.y = vX.v1.y + vY.v1.y;
+    }
+
+    vetor getResultante() {
+        return this->vR;
     }
 };
 
@@ -47,7 +57,8 @@ int janela = 0;
 float xBarra = 0.0;
 float xBolinha = 0.0;
 float yBolinha = -0.56;
-float xSeta = 0.15;
+float xSeta = 0.40;
+float ySeta = 0.0;
 vetor* vetorSeta = new vetor();
 vetor* vetorMovimentoBolinha = new vetor();
 
@@ -100,13 +111,21 @@ void CalculaNormal(triangle t, vertice *vn)
 }
 
 void atualizaVetorMovimentoBolinha() {
-     vetorMovimentoBolinha->v1.y = 0.15*0.15 - vetorMovimentoBolinha->v1.x;
+     ///faz pitágoras igual abaixo
+     ///bolinha.Vy^2 = 0.10^2 - bolinha.Vx^2
+}
+
+void atualizaVetorSeta() {
+     ySeta = sqrt(pow(0.40, 2) - pow(vetorSeta->v1.x, 2)); ///pitágoras: mantém o módulo do vetor constante = 0.40
+     if(ySeta >= 0) {   ///a bolinha não deve começar indo pra baixo
+        vetorSeta->v1.y = ySeta;
+     }
 }
 
 void moveBolinha() {
     if(game%2 == 1) {
         xBolinha += vetorMovimentoBolinha->v1.x;
-        if(yBolinha >= 0)   yBolinha -= vetorMovimentoBolinha->v1.y;
+        yBolinha += vetorMovimentoBolinha->v1.y;
     }
 }
 
@@ -443,11 +462,12 @@ void desenhaBolinha()
 
 void desenhaSeta() {
     vetorSeta->v1.x = xSeta;
+    atualizaVetorSeta();
     glPushMatrix();
         setColor(0.0, 1.0, 0.3);
         glBegin(GL_LINES);
             glVertex3f(xBolinha, yBolinha, 0.125);
-            glVertex3f(xBolinha + vetorSeta->v1.x, yBolinha + 0.25, 0.125);
+            glVertex3f(xBolinha + vetorSeta->v1.x, yBolinha + vetorSeta->v1.y, 0.125);
         glEnd();
     glPopMatrix();
 }
@@ -587,7 +607,7 @@ void motion(int x, int y )
 
 void motionBarra(int x, int y)
 {
-    if(game%2 == 1)
+    if(game%2 == 0)
     {
         if(xBarra >= -1.0 && xBarra <= 1.0)
 
@@ -610,16 +630,24 @@ void mouse(int button, int state, int x, int y)
         }
         if(button == 3) // Scroll up
         {
-            xSeta += 0.05;
+            if(xSeta <= 0.40) {
+                xSeta += 0.05;
+                atualizaVetorSeta();
+            }
         }
         if(button == 4) // Scroll Down
         {
-            xSeta -= 0.05;
+            if(xSeta >= -0.40) {
+                xSeta -= 0.05;
+                atualizaVetorSeta();
+            }
         }
     }
     else {
-        if( button ==  GLUT_LEFT_BUTTON) {
-            vetorMovimentoBolinha = vetorSeta;
+        if(button ==  GLUT_LEFT_BUTTON) {
+            vetorMovimentoBolinha->v1.x = vetorSeta->v1.x/4; ///dividi por 4 pq 0.40 é muito alto pra velocidade porém
+            vetorMovimentoBolinha->v1.y = vetorSeta->v1.y/4; ///  é um tamanho da seta, aí 0.40/4 ficou bom pra velocidade
+            ///SETA.DESAPARECER() (como q faz elemento desaparecer?)
         }
     }
 }
