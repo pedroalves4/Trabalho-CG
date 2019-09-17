@@ -104,7 +104,10 @@ void atualizaVetorMovimentoBolinha() {
 }
 
 void moveBolinha() {
-    xBolinha += vetorMovimentoBolinha->v1.x;
+    if(game%2 == 1) {
+        xBolinha += vetorMovimentoBolinha->v1.x;
+        if(yBolinha >= 0)   yBolinha -= vetorMovimentoBolinha->v1.y;
+    }
 }
 
 void desenhaPlataforma()
@@ -543,9 +546,6 @@ void keyboard (unsigned char key, int x, int y)
             if(projecao%2==0 && game%2==0){
                 liberaRotacao++;
             }
-        case 't':
-            vetorMovimentoBolinha = vetorSeta;
-            break;
     }
 }
 
@@ -617,11 +617,11 @@ void mouse(int button, int state, int x, int y)
             xSeta -= 0.05;
         }
     }
-   /* else {
+    else {
         if( button ==  GLUT_LEFT_BUTTON) {
             vetorMovimentoBolinha = vetorSeta;
         }
-    }*/
+    }
 }
 
 
