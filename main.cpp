@@ -562,6 +562,7 @@ int main(int argc, char** argv)
     glutMouseFunc( mouse );
     glutMotionFunc( motion );
     glutKeyboardFunc(keyboard);
+    glutSetCursor(GLUT_CURSOR_NONE);
     glutIdleFunc(idle);
     glutMainLoop();
     return 0;
