@@ -104,7 +104,6 @@ void atualizaVetorMovimentoBolinha() {
 
 void moveBolinha() {
     xBolinha += vetorMovimentoBolinha->v1.x;
-    yBolinha
 }
 
 void desenhaPlataforma()
