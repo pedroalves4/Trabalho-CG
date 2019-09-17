@@ -21,6 +21,7 @@ public:
     vertice v[3];
 };
 
+<<<<<<< Updated upstream
 class vetor {
     public:
         vertice v1;
@@ -30,6 +31,11 @@ class vetor {
         v0.x = 0.0;
         v0.y = 0.0;
     }
+=======
+class vetor
+{
+    vertice v2;
+>>>>>>> Stashed changes
 };
 
 /// Globals
@@ -41,6 +47,7 @@ int   width, height;
 int game = 0;
 int projecao = 0;
 int liberaRotacao = 0;
+int janela = 0;
 float xBarra = 0.0;
 float xBolinha = 0.0;
 float yBolinha = -0.56;
@@ -426,6 +433,7 @@ void desenhaBolinha()
     glPopMatrix();
 }
 
+<<<<<<< Updated upstream
 void desenhaSeta() {
     vetorSeta->v1.x = xSeta;
     glPushMatrix();
@@ -435,6 +443,14 @@ void desenhaSeta() {
             glVertex3f(xBolinha + vetorSeta->v1.x, yBolinha + 0.25, 0.125);
         glEnd();
     glPopMatrix();
+=======
+void desenhaSeta()
+{
+    glBegin(GL_LINES);
+    glVertex3f(xBolinha, yBolinha, 0.125);
+    glVertex3f(xBolinha + 0.25, yBolinha + 0.25, 0.125);
+    glEnd();
+>>>>>>> Stashed changes
 }
 
 void drawObject()
@@ -458,7 +474,7 @@ void display(void)
 
     if(projecao%2==0)
     {
-        gluLookAt (.0, -2.0, zdist, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+        gluLookAt (.0, -2.0, 1.8, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
         glPushMatrix();
         if(game%2==0 && liberaRotacao%2==0)
         {
@@ -521,6 +537,7 @@ void keyboard (unsigned char key, int x, int y)
 
     switch (tolower(key))
     {
+<<<<<<< Updated upstream
         case 27:
             exit(0);
             break;
@@ -537,6 +554,35 @@ void keyboard (unsigned char key, int x, int y)
         case 't':
             vetorMovimentoBolinha = vetorSeta;
             break;
+=======
+    case 27:
+        exit(0);
+        break;
+    case 32:
+        game++;
+        break;
+    case 'p':
+        projecao++;
+        break;
+    case 'c':
+        if(projecao%2==0 && game%2==0)
+        {
+            liberaRotacao++;
+        }
+        break;
+    case 'i':
+        janela++;
+        if(janela%2==0)
+        {
+            glutReshapeWindow(1000, 600);
+            glutPositionWindow(100, 100);
+
+        } else{
+
+            glutFullScreen();
+        }
+        break;
+>>>>>>> Stashed changes
     }
 }
 
@@ -556,9 +602,17 @@ void motion(int x, int y )
     }
 }
 
+<<<<<<< Updated upstream
 void motionBarra(int x, int y){
     if(game%2 == 1) {
         if(xBarra >= -0.75 && xBarra <= 0.75)
+=======
+void motionBarra(int x, int y)
+{
+    if(game%2 == 1)
+    {
+        if(xBarra >= -1.0 && xBarra <= 1.0)
+>>>>>>> Stashed changes
         {
             xBarra = (float)x/250 - 2;
             xBolinha = (float)x/250 - 2;
