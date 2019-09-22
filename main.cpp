@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <math.h>
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 
 #include "extras.h"
 
@@ -27,22 +27,6 @@ class vetor {
         vertice v1;
 };
 
-class vetor2D {
-    public:
-        vetor vX;
-        vetor vY;
-        vetor vR;
-
-    vetor2D() {
-        vR.v1.x = vX.v1.x + vY.v1.x;
-        vR.v1.y = vX.v1.y + vY.v1.y;
-    }
-
-    vetor getResultante() {
-        return this->vR;
-    }
-};
-
 
 /// Globals
 float zdist = 3.0;
@@ -60,7 +44,7 @@ float yBolinha = -0.56;
 float xSeta = 0.40;
 float ySeta = 0.0;
 vetor* vetorSeta = new vetor();
-vetor* vetorMovimentoBolinha = new vetor();
+vetor vetorMovimentoBolinha;
 
 
 /// Functions
@@ -111,8 +95,7 @@ void CalculaNormal(triangle t, vertice *vn)
 }
 
 void atualizaVetorMovimentoBolinha() {
-     ///faz pitágoras igual abaixo
-     ///bolinha.Vy^2 = 0.10^2 - bolinha.Vx^2
+
 }
 
 void atualizaVetorSeta() {
@@ -124,8 +107,58 @@ void atualizaVetorSeta() {
 
 void moveBolinha() {
     if(game%2 == 1) {
-        xBolinha += vetorMovimentoBolinha->v1.x;
-        yBolinha += vetorMovimentoBolinha->v1.y;
+        xBolinha += vetorMovimentoBolinha.v1.x;
+        yBolinha += vetorMovimentoBolinha.v1.y;
+    }
+}
+
+/*bool bolinhaToca(vertice parede) {
+    if() {
+        return true;
+    }
+    return false;
+}*/
+
+float calculaModuloVetor(vetor v) {
+    float somaQuadrados = pow(v.v1.x, 2.0) + pow(v.v1.y, 2.0);
+    float modulo = sqrt(somaQuadrados);
+    return modulo;
+}
+
+vetor calculaProjecao(vetor u, vetor v) {
+    vetor projecao;
+    float prodEscalar = u.v1.x * v.v1.x + u.v1.y * v.v1.y;
+    float quadradoDasComponentes = pow(v.v1.x, 2) + pow(v.v1.y, 2);
+    projecao.v1.x = (prodEscalar/quadradoDasComponentes)*v.v1.x;
+    projecao.v1.y = (prodEscalar/quadradoDasComponentes)*v.v1.y;
+    return projecao;
+}
+
+void refleteBolinha(vertice* verticeNormal) {
+    vetor vetorNormal;
+    vetorNormal.v1 = *verticeNormal;
+    vetor projecao = calculaProjecao(vetorMovimentoBolinha, vetorNormal);
+    float moduloProjecao = calculaModuloVetor(projecao);
+    float moduloNormal = calculaModuloVetor(vetorNormal);
+    float cosseno = moduloProjecao/moduloNormal;
+    vetor refletido;
+    refletido.v1.x = 2*cosseno*verticeNormal->x - vetorMovimentoBolinha.v1.x;
+    refletido.v1.y = 2*cosseno*verticeNormal->y - vetorMovimentoBolinha.v1.y;
+    vetorMovimentoBolinha = refletido;
+}
+
+void reflexaoBarra() {
+    if(xBolinha > 0.95 || xBolinha < -0.95)
+        vetorMovimentoBolinha.v1.x *= -1;
+    if(yBolinha > 0.95)
+        vetorMovimentoBolinha.v1.y *= -1;
+    if(yBolinha < -0.60 && fabs(xBarra - xBolinha) < 0.4)
+        vetorMovimentoBolinha.v1.y *= -1;
+}
+void reflexaoBarrasInferiores() {
+    if(xBolinha > -0.95 && xBolinha < -0.65) {
+        if(yBolinha < 0.23 && yBolinha > 0.224 )
+            vetorMovimentoBolinha.v1.y *= -1;
     }
 }
 
@@ -459,7 +492,6 @@ void desenhaBolinha()
     glPopMatrix();
 }
 
-
 void desenhaSeta() {
     vetorSeta->v1.x = xSeta;
     atualizaVetorSeta();
@@ -529,6 +561,8 @@ void display(void)
     glutSwapBuffers();
     moveBolinha();
     atualizaVetorMovimentoBolinha();
+    reflexaoBarra();
+    reflexaoBarrasInferiores();
 }
 
 void idle ()
@@ -607,16 +641,12 @@ void motion(int x, int y )
 
 void motionBarra(int x, int y)
 {
-    if(game%2 == 0)
-    {
-        if(xBarra >= -1.0 && xBarra <= 1.0)
-
-        {
-            xBarra = (float)x/250 - 2;
+    xBarra = (float)x/250 - 2;
+    if(xBarra >= -1.0 && xBarra <= 1.0) {
+        if(game%2 == 0) {
             xBolinha = (float)x/250 - 2;
         }
     }
-
 }
 
 // Mouse callback
@@ -645,8 +675,8 @@ void mouse(int button, int state, int x, int y)
     }
     else {
         if(button ==  GLUT_LEFT_BUTTON) {
-            vetorMovimentoBolinha->v1.x = vetorSeta->v1.x/4; ///dividi por 4 pq 0.40 é muito alto pra velocidade porém
-            vetorMovimentoBolinha->v1.y = vetorSeta->v1.y/4; ///  é um tamanho da seta, aí 0.40/4 ficou bom pra velocidade
+            vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/80;
+            vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/80;
             ///SETA.DESAPARECER() (como q faz elemento desaparecer?)
         }
     }
