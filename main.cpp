@@ -22,9 +22,21 @@ public:
 };
 
 
-class vetor {
-    public:
-        vertice v1;
+class vetor
+{
+public:
+    vertice v1;
+};
+
+class barrinhas
+{
+public:
+    bool mostra;
+
+    bool getExibe()
+    {
+        return mostra;
+    }
 };
 
 
@@ -44,6 +56,7 @@ float yBolinha = -0.56;
 float xSeta = 0.40;
 float ySeta = 0.0;
 vetor* vetorSeta = new vetor();
+barrinhas* vetorBarrinhas = new barrinhas[14];
 vetor vetorMovimentoBolinha;
 
 
@@ -94,19 +107,24 @@ void CalculaNormal(triangle t, vertice *vn)
     vn->z /= len;
 }
 
-void atualizaVetorMovimentoBolinha() {
+void atualizaVetorMovimentoBolinha()
+{
 
 }
 
-void atualizaVetorSeta() {
-     ySeta = sqrt(pow(0.40, 2) - pow(vetorSeta->v1.x, 2)); ///pitágoras: mantém o módulo do vetor constante = 0.40
-     if(ySeta >= 0) {   ///a bolinha não deve começar indo pra baixo
+void atualizaVetorSeta()
+{
+    ySeta = sqrt(pow(0.40, 2) - pow(vetorSeta->v1.x, 2)); ///pitágoras: mantém o módulo do vetor constante = 0.40
+    if(ySeta >= 0)     ///a bolinha não deve começar indo pra baixo
+    {
         vetorSeta->v1.y = ySeta;
-     }
+    }
 }
 
-void moveBolinha() {
-    if(game%2 == 1) {
+void moveBolinha()
+{
+    if(game%2 == 1)
+    {
         xBolinha += vetorMovimentoBolinha.v1.x;
         yBolinha += vetorMovimentoBolinha.v1.y;
     }
@@ -119,13 +137,15 @@ void moveBolinha() {
     return false;
 }*/
 
-float calculaModuloVetor(vetor v) {
+float calculaModuloVetor(vetor v)
+{
     float somaQuadrados = pow(v.v1.x, 2.0) + pow(v.v1.y, 2.0);
     float modulo = sqrt(somaQuadrados);
     return modulo;
 }
 
-vetor calculaProjecao(vetor u, vetor v) {
+vetor calculaProjecao(vetor u, vetor v)
+{
     vetor projecao;
     float prodEscalar = u.v1.x * v.v1.x + u.v1.y * v.v1.y;
     float quadradoDasComponentes = pow(v.v1.x, 2) + pow(v.v1.y, 2);
@@ -134,7 +154,8 @@ vetor calculaProjecao(vetor u, vetor v) {
     return projecao;
 }
 
-void refleteBolinha(vertice* verticeNormal) {
+void refleteBolinha(vertice* verticeNormal)
+{
     vetor vetorNormal;
     vetorNormal.v1 = *verticeNormal;
     vetor projecao = calculaProjecao(vetorMovimentoBolinha, vetorNormal);
@@ -147,7 +168,8 @@ void refleteBolinha(vertice* verticeNormal) {
     vetorMovimentoBolinha = refletido;
 }
 
-void reflexaoBarra() {
+void reflexaoBarra()
+{
     if(xBolinha > 0.95 || xBolinha < -0.95)
         vetorMovimentoBolinha.v1.x *= -1;
     if(yBolinha > 0.95)
@@ -155,10 +177,13 @@ void reflexaoBarra() {
     if(yBolinha < -0.60 && fabs(xBarra - xBolinha) < 0.4)
         vetorMovimentoBolinha.v1.y *= -1;
 }
-void reflexaoBarrasInferiores() {
-    if(xBolinha > -0.95 && xBolinha < -0.65) {
+void reflexaoBarrasInferiores()
+{
+    if(xBolinha > -0.95 && xBolinha < -0.65)
+    {
         if(yBolinha < 0.23 && yBolinha > 0.224 )
             vetorMovimentoBolinha.v1.y *= -1;
+            vetorBarrinhas[10].mostra = false;
     }
 }
 
@@ -347,10 +372,20 @@ void desenhaBarra()
     glPopMatrix();
 }
 
+void preencheVetorBarrinhas()
+{
+
+    for(int i=0; i < 15; i++)
+    {
+        vetorBarrinhas[i].mostra = true;
+    }
+    //vetorBarrinhas[10].mostra = false;
+}
 void desenhaBarrinhasDeBater()
 {
     int colunas = 0;
     int linhas = 0;
+    int cont = 0;
 
     float inicio = -0.95;
     float fim = -0.65;
@@ -413,64 +448,79 @@ void desenhaBarrinhasDeBater()
 
             setColor(0.1, 0.9, 0.1);
             glPushMatrix();
-            glBegin(GL_QUADS);
-            CalculaNormal(t[0], &vetorNormal);
-            glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-            for(int i=0; i < 4; i++)
-            {
-                glVertex3f(barraFaceTampa[i].x, barraFaceTampa[i].y, barraFaceTampa[i].z);
-            }
-            glEnd();
 
-            glBegin(GL_QUADS);
-            CalculaNormal(t[1], &vetorNormal);
-            glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-            for(int i=0; i < 4; i++)
+            if(vetorBarrinhas[10].mostra == true)
             {
-                glVertex3f(barraFaceBase[i].x, barraFaceBase[i].y, barraFaceBase[i].z);
-            }
-            glEnd();
+                glBegin(GL_QUADS);
+                CalculaNormal(t[0], &vetorNormal);
+                glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+                for(int i=0; i < 4; i++)
+                {
+                    glVertex3f(barraFaceTampa[i].x, barraFaceTampa[i].y, barraFaceTampa[i].z);
+                }
+                glEnd();
 
-            glBegin(GL_QUADS);
-            CalculaNormal(t[2], &vetorNormal);
-            glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-            for(int i=0; i < 4; i++)
-            {
-                glVertex3f(barraFaceDireita[i].x, barraFaceDireita[i].y, barraFaceDireita[i].z);
-            }
-            glEnd();
 
-            glBegin(GL_QUADS);
-            CalculaNormal(t[3], &vetorNormal);
-            glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-            for(int i=0; i < 4; i++)
-            {
-                glVertex3f(barraFaceSuperior[i].x, barraFaceSuperior[i].y, barraFaceSuperior[i].z);
-            }
-            glEnd();
 
-            glBegin(GL_QUADS);
-            CalculaNormal(t[4], &vetorNormal);
-            glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-            for(int i=0; i < 4; i++)
-            {
-                glVertex3f(barraFaceEsquerda[i].x, barraFaceEsquerda[i].y, barraFaceEsquerda[i].z);
-            }
-            glEnd();
+                glBegin(GL_QUADS);
+                CalculaNormal(t[1], &vetorNormal);
+                glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+                for(int i=0; i < 4; i++)
+                {
+                    glVertex3f(barraFaceBase[i].x, barraFaceBase[i].y, barraFaceBase[i].z);
+                }
+                glEnd();
 
-            glBegin(GL_QUADS);
-            CalculaNormal(t[5], &vetorNormal);
-            glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-            for(int i=0; i < 4; i++)
-            {
-                glVertex3f(barraFaceInferior[i].x, barraFaceInferior[i].y, barraFaceInferior[i].z);
+
+
+                glBegin(GL_QUADS);
+                CalculaNormal(t[2], &vetorNormal);
+                glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+                for(int i=0; i < 4; i++)
+                {
+                    glVertex3f(barraFaceDireita[i].x, barraFaceDireita[i].y, barraFaceDireita[i].z);
+                }
+                glEnd();
+
+
+
+                glBegin(GL_QUADS);
+                CalculaNormal(t[3], &vetorNormal);
+                glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+                for(int i=0; i < 4; i++)
+                {
+                    glVertex3f(barraFaceSuperior[i].x, barraFaceSuperior[i].y, barraFaceSuperior[i].z);
+                }
+                glEnd();
+
+
+
+                glBegin(GL_QUADS);
+                CalculaNormal(t[4], &vetorNormal);
+                glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+                for(int i=0; i < 4; i++)
+                {
+                    glVertex3f(barraFaceEsquerda[i].x, barraFaceEsquerda[i].y, barraFaceEsquerda[i].z);
+                }
+                glEnd();
+
+
+
+
+                glBegin(GL_QUADS);
+                CalculaNormal(t[5], &vetorNormal);
+                glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+                for(int i=0; i < 4; i++)
+                {
+                    glVertex3f(barraFaceInferior[i].x, barraFaceInferior[i].y, barraFaceInferior[i].z);
+                }
+                glEnd();
             }
-            glEnd();
 
             glPopMatrix();
 
             colunas++;
-
+            cont++;
 
             inicio += 0.40;
             fim += 0.40;
@@ -492,15 +542,16 @@ void desenhaBolinha()
     glPopMatrix();
 }
 
-void desenhaSeta() {
+void desenhaSeta()
+{
     vetorSeta->v1.x = xSeta;
     atualizaVetorSeta();
     glPushMatrix();
-        setColor(0.0, 1.0, 0.3);
-        glBegin(GL_LINES);
-            glVertex3f(xBolinha, yBolinha, 0.125);
-            glVertex3f(xBolinha + vetorSeta->v1.x, yBolinha + vetorSeta->v1.y, 0.125);
-        glEnd();
+    setColor(0.0, 1.0, 0.3);
+    glBegin(GL_LINES);
+    glVertex3f(xBolinha, yBolinha, 0.125);
+    glVertex3f(xBolinha + vetorSeta->v1.x, yBolinha + vetorSeta->v1.y, 0.125);
+    glEnd();
     glPopMatrix();
 }
 
@@ -509,6 +560,7 @@ void drawObject()
 {
     desenhaPlataforma();
     desenhaBarra();
+    preencheVetorBarrinhas();
     desenhaBarrinhasDeBater();
 
     desenhaBolinha();
@@ -587,19 +639,20 @@ void keyboard (unsigned char key, int x, int y)
     switch (tolower(key))
     {
 
-        case 27:
-            exit(0);
-            break;
-        case 32:
-            game++;
-            break;
-        case 'p':
-            projecao++;
-            break;
-        case 'c':
-            if(projecao%2==0 && game%2==0){
-                liberaRotacao++;
-            }
+    case 27:
+        exit(0);
+        break;
+    case 32:
+        game++;
+        break;
+    case 'p':
+        projecao++;
+        break;
+    case 'c':
+        if(projecao%2==0 && game%2==0)
+        {
+            liberaRotacao++;
+        }
     }
 }
 
@@ -607,17 +660,19 @@ void specialKeys(int key, int x, int y)
 {
     switch(key)
     {
-        case GLUT_KEY_F12:
-            janela++;
-            if(janela%2==0)
-            {
-                glutReshapeWindow(1000, 600);
-                glutPositionWindow(100, 100);
+    case GLUT_KEY_F12:
+        janela++;
+        if(janela%2==0)
+        {
+            glutReshapeWindow(1000, 600);
+            glutPositionWindow(100, 100);
 
-            } else{
+        }
+        else
+        {
 
-                glutFullScreen();
-            }
+            glutFullScreen();
+        }
         break;
     }
     glutPostRedisplay();
@@ -642,8 +697,10 @@ void motion(int x, int y )
 void motionBarra(int x, int y)
 {
     xBarra = (float)x/250 - 2;
-    if(xBarra >= -1.0 && xBarra <= 1.0) {
-        if(game%2 == 0) {
+    if(xBarra >= -1.0 && xBarra <= 1.0)
+    {
+        if(game%2 == 0)
+        {
             xBolinha = (float)x/250 - 2;
         }
     }
@@ -652,7 +709,8 @@ void motionBarra(int x, int y)
 // Mouse callback
 void mouse(int button, int state, int x, int y)
 {
-    if(game%2 == 0) {
+    if(game%2 == 0)
+    {
         if ( button == GLUT_LEFT_BUTTON && state == GLUT_DOWN )
         {
             last_x = x;
@@ -660,23 +718,27 @@ void mouse(int button, int state, int x, int y)
         }
         if(button == 3) // Scroll up
         {
-            if(xSeta <= 0.40) {
+            if(xSeta <= 0.40)
+            {
                 xSeta += 0.05;
                 atualizaVetorSeta();
             }
         }
         if(button == 4) // Scroll Down
         {
-            if(xSeta >= -0.40) {
+            if(xSeta >= -0.40)
+            {
                 xSeta -= 0.05;
                 atualizaVetorSeta();
             }
         }
     }
-    else {
-        if(button ==  GLUT_LEFT_BUTTON) {
-            vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/80;
-            vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/80;
+    else
+    {
+        if(button ==  GLUT_LEFT_BUTTON)
+        {
+            vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/40;
+            vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/40;
             ///SETA.DESAPARECER() (como q faz elemento desaparecer?)
         }
     }
