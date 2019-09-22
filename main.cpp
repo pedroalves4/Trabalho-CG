@@ -55,6 +55,7 @@ float xBolinha = 0.0;
 float yBolinha = -0.56;
 float xSeta = 0.40;
 float ySeta = 0.0;
+bool desenhaSetaControle = true;
 vetor* vetorSeta = new vetor();
 barrinhas* vetorBarrinhas = new barrinhas[14];
 vetor vetorMovimentoBolinha;
@@ -181,9 +182,10 @@ void reflexaoBarrasInferiores()
 {
     if(xBolinha > -0.95 && xBolinha < -0.65)
     {
-        if(yBolinha < 0.23 && yBolinha > 0.224 )
+        if(yBolinha < 0.23 && yBolinha > 0.224 ) {
             vetorMovimentoBolinha.v1.y *= -1;
             vetorBarrinhas[10].mostra = false;
+        }
     }
 }
 
@@ -374,12 +376,10 @@ void desenhaBarra()
 
 void preencheVetorBarrinhas()
 {
-
     for(int i=0; i < 15; i++)
     {
         vetorBarrinhas[i].mostra = true;
     }
-    //vetorBarrinhas[10].mostra = false;
 }
 void desenhaBarrinhasDeBater()
 {
@@ -544,15 +544,17 @@ void desenhaBolinha()
 
 void desenhaSeta()
 {
-    vetorSeta->v1.x = xSeta;
-    atualizaVetorSeta();
-    glPushMatrix();
-    setColor(0.0, 1.0, 0.3);
-    glBegin(GL_LINES);
-    glVertex3f(xBolinha, yBolinha, 0.125);
-    glVertex3f(xBolinha + vetorSeta->v1.x, yBolinha + vetorSeta->v1.y, 0.125);
-    glEnd();
-    glPopMatrix();
+    if(desenhaSetaControle) {
+        vetorSeta->v1.x = xSeta;
+        atualizaVetorSeta();
+        glPushMatrix();
+        setColor(0.0, 1.0, 0.3);
+        glBegin(GL_LINES);
+        glVertex3f(xBolinha, yBolinha, 0.125);
+        glVertex3f(xBolinha + vetorSeta->v1.x, yBolinha + vetorSeta->v1.y, 0.125);
+        glEnd();
+        glPopMatrix();
+        }
 }
 
 
@@ -737,8 +739,9 @@ void mouse(int button, int state, int x, int y)
     {
         if(button ==  GLUT_LEFT_BUTTON)
         {
-            vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/40;
-            vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/40;
+            desenhaSetaControle = false;
+            vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/60;
+            vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/60;
             ///SETA.DESAPARECER() (como q faz elemento desaparecer?)
         }
     }
