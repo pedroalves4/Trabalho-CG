@@ -449,7 +449,7 @@ void desenhaBarrinhasDeBater()
             setColor(0.1, 0.9, 0.1);
             glPushMatrix();
 
-            if(vetorBarrinhas[10].mostra == true)
+            if(vetorBarrinhas[cont].mostra == true)
             {
                 glBegin(GL_QUADS);
                 CalculaNormal(t[0], &vetorNormal);
@@ -554,7 +554,7 @@ void desenhaSeta()
         glVertex3f(xBolinha + vetorSeta->v1.x, yBolinha + vetorSeta->v1.y, 0.125);
         glEnd();
         glPopMatrix();
-        }
+    }
 }
 
 
@@ -562,7 +562,7 @@ void drawObject()
 {
     desenhaPlataforma();
     desenhaBarra();
-    preencheVetorBarrinhas();
+    //preencheVetorBarrinhas();
     desenhaBarrinhasDeBater();
 
     desenhaBolinha();
@@ -742,7 +742,6 @@ void mouse(int button, int state, int x, int y)
             desenhaSetaControle = false;
             vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/60;
             vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/60;
-            ///SETA.DESAPARECER() (como q faz elemento desaparecer?)
         }
     }
 }
@@ -751,6 +750,7 @@ void mouse(int button, int state, int x, int y)
 /// Main
 int main(int argc, char** argv)
 {
+    preencheVetorBarrinhas();
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize (1000, 600);
