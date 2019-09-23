@@ -404,6 +404,27 @@ void reflexaoBloquinhos()
     }
 }
 
+void preencheVetorBarrinhas()
+{
+    for(int i=0; i < 15; i++)
+    {
+        vetorBloquinhos[i].mostra = true;
+    }
+}
+
+void restart()
+{
+    preencheVetorBarrinhas();
+    xBarra = 0;
+    xBolinha = 0;
+    yBolinha = -0.56;
+    vetorMovimentoBolinha.v1.x = 0;
+    vetorMovimentoBolinha.v1.y = 0;
+    desenhaSetaControle = true;
+    primeiroLancamento = false;
+
+}
+
 bool GameOver()
 {
     if(yBolinha < -1.0)
@@ -414,6 +435,7 @@ bool GameOver()
         vetor VetorZero;
         VetorZero.v1 = v;
         vetorMovimentoBolinha = VetorZero;
+        restart();
         return true;
     }
     return false;
@@ -607,13 +629,7 @@ void desenhaBarra()
     glPopMatrix();
 }
 
-void preencheVetorBarrinhas()
-{
-    for(int i=0; i < 15; i++)
-    {
-        vetorBloquinhos[i].mostra = true;
-    }
-}
+
 void desenhaBarrinhasDeBater()
 {
     int colunas = 0;
@@ -767,18 +783,7 @@ void desenhaBarrinhasDeBater()
 
 }
 
-void restart()
-{
-    preencheVetorBarrinhas();
-    xBarra = 0;
-    xBolinha = 0;
-    yBolinha = -0.56;
-    vetorMovimentoBolinha.v1.x = 0;
-    vetorMovimentoBolinha.v1.y = 0;
-    desenhaSetaControle = true;
-    primeiroLancamento = false;
 
-}
 
 void desenhaBolinha()
 {
