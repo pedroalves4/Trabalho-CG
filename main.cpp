@@ -58,6 +58,7 @@ float yBolinha = -0.56;
 float xSeta = 0.40;
 float ySeta = 0.0;
 bool desenhaSetaControle = true;
+bool pintaPlataformaVermelho = false;
 vetor* vetorSeta = new vetor();
 barrinhas* vetorBloquinhos = new barrinhas[14];
 vetor vetorMovimentoBolinha;
@@ -414,6 +415,7 @@ void preencheVetorBarrinhas()
 
 void restart()
 {
+    pintaPlataformaVermelho = false;
     preencheVetorBarrinhas();
     xBarra = 0;
     xBolinha = 0;
@@ -422,12 +424,13 @@ void restart()
     vetorMovimentoBolinha.v1.y = 0;
     desenhaSetaControle = true;
     primeiroLancamento = false;
-
 }
 
 bool GameOver()
 {
-    if(yBolinha < -1.0)
+    if(yBolinha < -0.8)
+        pintaPlataformaVermelho = true;
+    if(yBolinha < -1.5)
     {
         vertice v;
         v.x = 0;
@@ -477,7 +480,7 @@ void desenhaPlataforma()
     };
 
     setColorBase();
-    if(GameOver())
+    if(pintaPlataformaVermelho)
         setColor(1.0, 0.0, 0.0);
     else
         setColor(0.1, 0.1, 0.1);
@@ -823,7 +826,6 @@ void drawObject()
 
     desenhaBolinha();
     desenhaSeta();
-
 }
 
 void display(void)
