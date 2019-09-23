@@ -46,9 +46,11 @@ float rotationX = 0.0, rotationY = 0.0;
 float rotacaoX = 0.0, rotacaoY = 0.0;
 int   last_x, last_y;
 int   width, height;
-int game = 0;
-int projecao = 0;
-int liberaRotacao = 0;
+bool pausado = false;
+bool projecao_ortogonal = true;
+bool rotacaoLiberada = false;
+bool podeMoverABolinha = false;
+bool primeiroLancamento = false;
 int janela = 0;
 float xBarra = 0.0;
 float xBolinha = 0.0;
@@ -119,10 +121,12 @@ void atualizaVetorSeta()
 
 void moveBolinha()
 {
-    if(game%2 == 1)
+    if(!pausado)
     {
-        xBolinha += vetorMovimentoBolinha.v1.x;
-        yBolinha += vetorMovimentoBolinha.v1.y;
+
+            xBolinha += vetorMovimentoBolinha.v1.x;
+            yBolinha += vetorMovimentoBolinha.v1.y;
+
     }
 }
 
@@ -170,44 +174,240 @@ void reflexaoBloquinhos()
 {
     if(xBolinha > -0.97 && xBolinha < -0.63)
     {
-        if(vetorBloquinhos[10].mostra) {
+        if(vetorBloquinhos[10].mostra)
+        {
             if((yBolinha < 0.227 && yBolinha > 0.223)  ||
-               (yBolinha > 0.352 && yBolinha < 0.358)) {
+                    (yBolinha > 0.352 && yBolinha < 0.358))
+            {
                 vetorMovimentoBolinha.v1.y *= -1;
                 vetorBloquinhos[10].mostra = false;
             }
-            if((yBolinha > 0.227 && yBolinha < 0.358) && (xBolinha < -0.67 && xBolinha > -0.66)) {
+            if((yBolinha > 0.227 && yBolinha < 0.358) && (xBolinha < -0.67 && xBolinha > -0.66))
+            {
                 vetorMovimentoBolinha.v1.x *= -1;
                 vetorBloquinhos[10].mostra = false;
             }
         }
 
-        if(vetorBloquinhos[5].mostra) {
-            if((yBolinha > 0.447 && yBolinha < 0.452) || (yBolinha > 0.577 && yBolinha < 0.583)) {
+        if(vetorBloquinhos[5].mostra)
+        {
+            if((yBolinha > 0.447 && yBolinha < 0.452) || (yBolinha > 0.577 && yBolinha < 0.583))
+            {
                 vetorMovimentoBolinha.v1.y *= -1;
                 vetorBloquinhos[5].mostra = false;
             }
-            if((yBolinha > 0.447 && yBolinha < 0.583) && (xBolinha < -0.6 && xBolinha > -0.7)) {
+            if((yBolinha > 0.447 && yBolinha < 0.583) && (xBolinha < -0.6 && xBolinha > -0.7))
+            {
                 vetorMovimentoBolinha.v1.x *= -1;
                 vetorBloquinhos[5].mostra = false;
             }
         }
 
-        if(vetorBloquinhos[0].mostra) {
-            if((yBolinha > 0.672 && yBolinha < 0.678) || (yBolinha > 0.802 && yBolinha < 0.808)) {
+        if(vetorBloquinhos[0].mostra)
+        {
+            if((yBolinha > 0.672 && yBolinha < 0.678) || (yBolinha > 0.802 && yBolinha < 0.808))
+            {
                 vetorMovimentoBolinha.v1.y *= -1;
                 vetorBloquinhos[0].mostra = false;
             }
-            if((yBolinha > 0.672 && yBolinha < 0.808) && (xBolinha < -0.6 && xBolinha > -0.7)) {
+            if((yBolinha > 0.672 && yBolinha < 0.808) && (xBolinha < -0.6 && xBolinha > -0.7))
+            {
                 vetorMovimentoBolinha.v1.x *= -1;
                 vetorBloquinhos[0].mostra = false;
             }
         }
     }
+
+
+    if(xBolinha > -0.57 && xBolinha < -0.23 )
+    {
+        if(vetorBloquinhos[11].mostra)
+        {
+            if((yBolinha < 0.227 && yBolinha > 0.223)  ||
+                    (yBolinha > 0.352 && yBolinha < 0.358))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[11].mostra = false;
+            }
+            if((yBolinha > 0.227 && yBolinha < 0.358) && (xBolinha < -0.67 && xBolinha > -0.66))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[11].mostra = false;
+            }
+        }
+
+        if(vetorBloquinhos[6].mostra)
+        {
+            if((yBolinha > 0.44 && yBolinha < 0.46) || (yBolinha > 0.577 && yBolinha < 0.583))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[6].mostra = false;
+            }
+            if((yBolinha > 0.447 && yBolinha < 0.583) && (xBolinha < -0.6 && xBolinha > -0.7))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[6].mostra = false;
+            }
+        }
+
+        if(vetorBloquinhos[1].mostra)
+        {
+            if((yBolinha > 0.67 && yBolinha < 0.68) || (yBolinha > 0.802 && yBolinha < 0.808))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[1].mostra = false;
+            }
+            if((yBolinha > 0.672 && yBolinha < 0.808) && (xBolinha < -0.6 && xBolinha > -0.7))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[1].mostra = false;
+            }
+        }
+    }
+
+    if(xBolinha > -0.17 && xBolinha < 0.23 )
+    {
+        if(vetorBloquinhos[12].mostra)
+        {
+            if((yBolinha < 0.227 && yBolinha > 0.223)  ||
+                    (yBolinha > 0.352 && yBolinha < 0.358))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[12].mostra = false;
+            }
+            if((yBolinha > 0.227 && yBolinha < 0.358) && (xBolinha < -0.67 && xBolinha > -0.66))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[12].mostra = false;
+            }
+        }
+
+        if(vetorBloquinhos[7].mostra)
+        {
+            if((yBolinha > 0.44 && yBolinha < 0.46) || (yBolinha > 0.577 && yBolinha < 0.583))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[7].mostra = false;
+            }
+            if((yBolinha > 0.447 && yBolinha < 0.583) && (xBolinha < -0.6 && xBolinha > -0.7))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[7].mostra = false;
+            }
+        }
+
+        if(vetorBloquinhos[2].mostra)
+        {
+            if((yBolinha > 0.67 && yBolinha < 0.68) || (yBolinha > 0.802 && yBolinha < 0.808))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[2].mostra = false;
+            }
+            if((yBolinha > 0.672 && yBolinha < 0.808) && (xBolinha < -0.6 && xBolinha > -0.7))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[2].mostra = false;
+            }
+        }
+    }
+
+    if(xBolinha > 0.27 && xBolinha < 0.63 )
+    {
+        if(vetorBloquinhos[13].mostra)
+        {
+            if((yBolinha < 0.227 && yBolinha > 0.223)  ||
+                    (yBolinha > 0.352 && yBolinha < 0.358))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[13].mostra = false;
+            }
+            if((yBolinha > 0.227 && yBolinha < 0.358) && (xBolinha < -0.67 && xBolinha > -0.66))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[13].mostra = false;
+            }
+        }
+
+        if(vetorBloquinhos[8].mostra)
+        {
+            if((yBolinha > 0.44 && yBolinha < 0.46) || (yBolinha > 0.577 && yBolinha < 0.583))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[8].mostra = false;
+            }
+            if((yBolinha > 0.44 && yBolinha < 0.583) && (xBolinha < -0.6 && xBolinha > -0.7))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[8].mostra = false;
+            }
+        }
+
+        if(vetorBloquinhos[3].mostra)
+        {
+            if((yBolinha > 0.67 && yBolinha < 0.68) || (yBolinha > 0.802 && yBolinha < 0.808))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[3].mostra = false;
+            }
+            if((yBolinha > 0.672 && yBolinha < 0.808) && (xBolinha < -0.6 && xBolinha > -0.7))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[3].mostra = false;
+            }
+        }
+    }
+
+    if(xBolinha > 0.67 && xBolinha < 0.97 )
+    {
+        if(vetorBloquinhos[14].mostra)
+        {
+            if((yBolinha < 0.227 && yBolinha > 0.223)  ||
+                    (yBolinha > 0.352 && yBolinha < 0.358))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[14].mostra = false;
+            }
+            if((yBolinha > 0.227 && yBolinha < 0.358) && (xBolinha < -0.67 && xBolinha > -0.66))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[14].mostra = false;
+            }
+        }
+
+        if(vetorBloquinhos[9].mostra)
+        {
+            if((yBolinha > 0.44 && yBolinha < 0.46) || (yBolinha > 0.577 && yBolinha < 0.583))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[9].mostra = false;
+            }
+            if((yBolinha > 0.44 && yBolinha < 0.583) && (xBolinha < -0.6 && xBolinha > -0.7))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[9].mostra = false;
+            }
+        }
+
+        if(vetorBloquinhos[4].mostra)
+        {
+            if((yBolinha > 0.67 && yBolinha < 0.68) || (yBolinha > 0.802 && yBolinha < 0.808))
+            {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[4].mostra = false;
+            }
+            if((yBolinha > 0.672 && yBolinha < 0.808) && (xBolinha < -0.6 && xBolinha > -0.7))
+            {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[4].mostra = false;
+            }
+        }
+    }
 }
 
-bool GameOver() {
-    if(yBolinha < -1.0) {
+bool GameOver()
+{
+    if(yBolinha < -1.0)
+    {
         vertice v;
         v.x = 0;
         v.y = 0;
@@ -422,6 +622,7 @@ void desenhaBarrinhasDeBater()
 
     float inicio = -0.95;
     float fim = -0.65;
+
     float inicioh = 0.90;
     float fimh = 0.775;
 
@@ -566,9 +767,23 @@ void desenhaBarrinhasDeBater()
 
 }
 
+void restart()
+{
+    preencheVetorBarrinhas();
+    xBarra = 0;
+    xBolinha = 0;
+    yBolinha = -0.56;
+    vetorMovimentoBolinha.v1.x = 0;
+    vetorMovimentoBolinha.v1.y = 0;
+    desenhaSetaControle = true;
+    primeiroLancamento = false;
+
+}
+
 void desenhaBolinha()
 {
-    if(!GameOver()) {
+    if(!GameOver())
+    {
         setColor(1.0, 0.5, 0.1);
         glPushMatrix();
         glTranslatef(xBolinha, yBolinha, 0.125);
@@ -579,7 +794,8 @@ void desenhaBolinha()
 
 void desenhaSeta()
 {
-    if(desenhaSetaControle) {
+    if(desenhaSetaControle)
+    {
         vetorSeta->v1.x = xSeta;
         atualizaVetorSeta();
         glPushMatrix();
@@ -613,11 +829,11 @@ void display(void)
     glLoadIdentity();
 
 
-    if(projecao%2==0)
+    if(projecao_ortogonal)
     {
         gluLookAt (.0, -2.0, 1.8, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
         glPushMatrix();
-        if(game%2==0 && liberaRotacao%2==0)
+        if(pausado && rotacaoLiberada)
         {
             glRotatef( rotationY, 0.0, 1.0, 0.0 );
             rotacaoY = rotationY;
@@ -635,7 +851,7 @@ void display(void)
     }
 
 
-    if(projecao%2 != 0)
+    if(!projecao_ortogonal)
     {
 
         gluLookAt (0.0, 0.0, zdist, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
@@ -679,17 +895,40 @@ void keyboard (unsigned char key, int x, int y)
         exit(0);
         break;
     case 32:
-        game++;
+        if(pausado)
+        {
+            pausado = false;
+            podeMoverABolinha = false;
+        }
+        else{
+            pausado = true;
+
+        }
         break;
     case 'p':
-        projecao++;
+        if(projecao_ortogonal)
+        {
+            projecao_ortogonal = false;
+        }
+        else{
+            projecao_ortogonal = true;
+        }
         break;
     case 'c':
-        if(projecao%2==0 && game%2==0)
+        if(projecao_ortogonal && pausado)
         {
-            liberaRotacao++;
-        }
+            if(rotacaoLiberada){
+                rotacaoLiberada = false;
+            }
+            else{
+                rotacaoLiberada = true;
+            }
+        break;
+    case 'r':
+        restart();
+        break;
     }
+}
 }
 
 void specialKeys(int key, int x, int y)
@@ -717,9 +956,9 @@ void specialKeys(int key, int x, int y)
 // Motion callback
 void motion(int x, int y )
 {
-    if(game%2 == 0)
+    if(pausado)
     {
-        if(projecao%2 == 0 && liberaRotacao%2==0)
+        if(projecao_ortogonal && rotacaoLiberada)
         {
             rotationX += (float) (y - last_y);
             rotationY += (float) (x - last_x);
@@ -732,21 +971,25 @@ void motion(int x, int y )
 
 void motionBarra(int x, int y)
 {
-    xBarra = (float)x/250 - 2;
-    if(xBarra >= -1.0 && xBarra <= 1.0)
-    {
-        if(game%2 == 0)
+    if(!pausado){
+        xBarra = (float)x/250 - 2;
+        if(xBarra >= -1.0 && xBarra <= 1.0)
         {
-            xBolinha = (float)x/250 - 2;
+            if(!primeiroLancamento)
+            {
+                xBolinha = (float)x/250 - 2;
+            }
         }
     }
+
 }
+
+
 
 // Mouse callback
 void mouse(int button, int state, int x, int y)
 {
-    if(game%2 == 0)
-    {
+
         if ( button == GLUT_LEFT_BUTTON && state == GLUT_DOWN )
         {
             last_x = x;
@@ -768,17 +1011,24 @@ void mouse(int button, int state, int x, int y)
                 atualizaVetorSeta();
             }
         }
-    }
-    else
+
+
+    if(!pausado)
     {
-        if(button ==  GLUT_LEFT_BUTTON)
-        {
-            desenhaSetaControle = false;
-            vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/90;
-            vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/90;
+        if(!primeiroLancamento){
+            if(button ==  GLUT_LEFT_BUTTON)
+            {
+                desenhaSetaControle = false;
+                vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/110;
+                vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/110;
+                primeiroLancamento = true;
+
+            }
         }
     }
+
 }
+
 
 
 /// Main
