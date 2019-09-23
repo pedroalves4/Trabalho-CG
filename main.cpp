@@ -211,9 +211,9 @@ bool GameOver() {
         vertice v;
         v.x = 0;
         v.y = 0;
-        vetor VetorGameOver;
-        VetorGameOver.v1 = v;
-        vetorMovimentoBolinha = VetorGameOver;
+        vetor VetorZero;
+        VetorZero.v1 = v;
+        vetorMovimentoBolinha = VetorZero;
         return true;
     }
     return false;
