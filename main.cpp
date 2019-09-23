@@ -57,7 +57,7 @@ float xSeta = 0.40;
 float ySeta = 0.0;
 bool desenhaSetaControle = true;
 vetor* vetorSeta = new vetor();
-barrinhas* vetorBarrinhas = new barrinhas[14];
+barrinhas* vetorBloquinhos = new barrinhas[14];
 vetor vetorMovimentoBolinha;
 
 
@@ -108,11 +108,6 @@ void CalculaNormal(triangle t, vertice *vn)
     vn->z /= len;
 }
 
-void atualizaVetorMovimentoBolinha()
-{
-
-}
-
 void atualizaVetorSeta()
 {
     ySeta = sqrt(pow(0.40, 2) - pow(vetorSeta->v1.x, 2)); ///pitágoras: mantém o módulo do vetor constante = 0.40
@@ -131,13 +126,6 @@ void moveBolinha()
     }
 }
 
-/*bool bolinhaToca(vertice parede) {
-    if() {
-        return true;
-    }
-    return false;
-}*/
-
 float calculaModuloVetor(vetor v)
 {
     float somaQuadrados = pow(v.v1.x, 2.0) + pow(v.v1.y, 2.0);
@@ -149,9 +137,9 @@ vetor calculaProjecao(vetor u, vetor v)
 {
     vetor projecao;
     float prodEscalar = u.v1.x * v.v1.x + u.v1.y * v.v1.y;
-    float quadradoDasComponentes = pow(v.v1.x, 2) + pow(v.v1.y, 2);
-    projecao.v1.x = (prodEscalar/quadradoDasComponentes)*v.v1.x;
-    projecao.v1.y = (prodEscalar/quadradoDasComponentes)*v.v1.y;
+    float somaQuadradoDasComponentes = pow(v.v1.x, 2) + pow(v.v1.y, 2);
+    projecao.v1.x = (prodEscalar/somaQuadradoDasComponentes)*v.v1.x;
+    projecao.v1.y = (prodEscalar/somaQuadradoDasComponentes)*v.v1.y;
     return projecao;
 }
 
@@ -178,15 +166,57 @@ void reflexaoBarra()
     if(yBolinha < -0.60 && fabs(xBarra - xBolinha) < 0.4)
         vetorMovimentoBolinha.v1.y *= -1;
 }
-void reflexaoBarrasInferiores()
+void reflexaoBloquinhos()
 {
-    if(xBolinha > -0.95 && xBolinha < -0.65)
+    if(xBolinha > -0.97 && xBolinha < -0.63)
     {
-        if(yBolinha < 0.23 && yBolinha > 0.224 ) {
-            vetorMovimentoBolinha.v1.y *= -1;
-            vetorBarrinhas[10].mostra = false;
+        if(vetorBloquinhos[10].mostra) {
+            if((yBolinha < 0.227 && yBolinha > 0.223)  ||
+               (yBolinha > 0.352 && yBolinha < 0.358)) {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[10].mostra = false;
+            }
+            if((yBolinha > 0.227 && yBolinha < 0.358) && (xBolinha < -0.67 && xBolinha > -0.66)) {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[10].mostra = false;
+            }
+        }
+
+        if(vetorBloquinhos[5].mostra) {
+            if((yBolinha > 0.447 && yBolinha < 0.452) || (yBolinha > 0.577 && yBolinha < 0.583)) {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[5].mostra = false;
+            }
+            if((yBolinha > 0.447 && yBolinha < 0.583) && (xBolinha < -0.6 && xBolinha > -0.7)) {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[5].mostra = false;
+            }
+        }
+
+        if(vetorBloquinhos[0].mostra) {
+            if((yBolinha > 0.672 && yBolinha < 0.678) || (yBolinha > 0.802 && yBolinha < 0.808)) {
+                vetorMovimentoBolinha.v1.y *= -1;
+                vetorBloquinhos[0].mostra = false;
+            }
+            if((yBolinha > 0.672 && yBolinha < 0.808) && (xBolinha < -0.6 && xBolinha > -0.7)) {
+                vetorMovimentoBolinha.v1.x *= -1;
+                vetorBloquinhos[0].mostra = false;
+            }
         }
     }
+}
+
+bool GameOver() {
+    if(yBolinha < -1.0) {
+        vertice v;
+        v.x = 0;
+        v.y = 0;
+        vetor VetorGameOver;
+        VetorGameOver.v1 = v;
+        vetorMovimentoBolinha = VetorGameOver;
+        return true;
+    }
+    return false;
 }
 
 void desenhaPlataforma()
@@ -225,7 +255,10 @@ void desenhaPlataforma()
     };
 
     setColorBase();
-    setColor(0.1, 0.1, 0.1);
+    if(GameOver())
+        setColor(1.0, 0.0, 0.0);
+    else
+        setColor(0.1, 0.1, 0.1);
     glBegin(GL_QUADS);
     CalculaNormal(t[0], &vetorNormal);
     glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
@@ -378,7 +411,7 @@ void preencheVetorBarrinhas()
 {
     for(int i=0; i < 15; i++)
     {
-        vetorBarrinhas[i].mostra = true;
+        vetorBloquinhos[i].mostra = true;
     }
 }
 void desenhaBarrinhasDeBater()
@@ -449,7 +482,7 @@ void desenhaBarrinhasDeBater()
             setColor(0.1, 0.9, 0.1);
             glPushMatrix();
 
-            if(vetorBarrinhas[cont].mostra == true)
+            if(vetorBloquinhos[cont].mostra == true)
             {
                 glBegin(GL_QUADS);
                 CalculaNormal(t[0], &vetorNormal);
@@ -535,11 +568,13 @@ void desenhaBarrinhasDeBater()
 
 void desenhaBolinha()
 {
-    setColor(1.0, 0.5, 0.1);
-    glPushMatrix();
-    glTranslatef(xBolinha, yBolinha, 0.125);
-    glutSolidSphere(0.0625, 20, 20);
-    glPopMatrix();
+    if(!GameOver()) {
+        setColor(1.0, 0.5, 0.1);
+        glPushMatrix();
+        glTranslatef(xBolinha, yBolinha, 0.125);
+        glutSolidSphere(0.0625, 20, 20);
+        glPopMatrix();
+    }
 }
 
 void desenhaSeta()
@@ -614,9 +649,8 @@ void display(void)
     }
     glutSwapBuffers();
     moveBolinha();
-    atualizaVetorMovimentoBolinha();
     reflexaoBarra();
-    reflexaoBarrasInferiores();
+    reflexaoBloquinhos();
 }
 
 void idle ()
@@ -740,8 +774,8 @@ void mouse(int button, int state, int x, int y)
         if(button ==  GLUT_LEFT_BUTTON)
         {
             desenhaSetaControle = false;
-            vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/60;
-            vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/60;
+            vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/90;
+            vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/90;
         }
     }
 }
