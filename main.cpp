@@ -138,6 +138,7 @@ float calculaModuloVetor(vetor v)
     return modulo;
 }
 
+///Proj U em V = (u.v/|v|²)*V
 vetor calculaProjecao(vetor u, vetor v)
 {
     vetor projecao;
@@ -148,23 +149,23 @@ vetor calculaProjecao(vetor u, vetor v)
     return projecao;
 }
 
-void refleteBolinha(vertice* verticeNormal)
+void refleteBolinha(vertice verticeNormal)
 {
     vetor vetorNormal;
-    vetorNormal.v1 = *verticeNormal;
-    vetor projecao = calculaProjecao(vetorMovimentoBolinha, vetorNormal);
-    float moduloProjecao = calculaModuloVetor(projecao);
-    float moduloNormal = calculaModuloVetor(vetorNormal);
-    float cosseno = moduloProjecao/moduloNormal;
+    vetorNormal.v1 = verticeNormal;
     vetor refletido;
-    refletido.v1.x = 2*cosseno*verticeNormal->x - vetorMovimentoBolinha.v1.x;
-    refletido.v1.y = 2*cosseno*verticeNormal->y - vetorMovimentoBolinha.v1.y;
+    float produtoEscalar =  vetorMovimentoBolinha.v1.x*vetorNormal.v1.x +
+                            vetorMovimentoBolinha.v1.y*vetorNormal.v1.y;
+
+    refletido.v1.x = 2*produtoEscalar*vetorNormal.v1.x - vetorMovimentoBolinha.v1.x;
+    refletido.v1.y = 2*produtoEscalar*vetorNormal.v1.y - vetorMovimentoBolinha.v1.y;
+
     vetorMovimentoBolinha = refletido;
 }
 
 void reflexaoBarra()
 {
-    if(xBolinha > 0.95 || xBolinha < -0.95)
+    if(/*xBolinha > 0.95 || */xBolinha < -0.95)
         vetorMovimentoBolinha.v1.x *= -1;
     if(yBolinha > 0.95)
         vetorMovimentoBolinha.v1.y *= -1;
@@ -444,6 +445,13 @@ bool GameOver()
     return false;
 }
 
+bool verificaColisaoX(vertice v) {
+    if(fabs(v.x - xBolinha) < 0.1)
+        return true;
+
+    return false;
+}
+
 void desenhaPlataforma()
 {
     vertice vetorNormal;
@@ -493,6 +501,7 @@ void desenhaPlataforma()
     }
     glEnd();
 
+
     setColor(0.6, 0.6, 0.9);
     glBegin(GL_QUADS);
     CalculaNormal(t[1], &vetorNormal);
@@ -502,6 +511,9 @@ void desenhaPlataforma()
         glVertex3f(faceDireita[i].x, faceDireita[i].y, faceDireita[i].z);
     }
     glEnd();
+    if(verificaColisaoX(faceDireita[0])) {
+        refleteBolinha(vetorNormal);
+    }
 
     setColor(0.6, 0.6, 0.9);
     glBegin(GL_QUADS);
