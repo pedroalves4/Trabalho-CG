@@ -149,28 +149,34 @@ vetor calculaProjecao(vetor u, vetor v)
     return projecao;
 }
 
+float calculaProdutoEscalar(vertice v1, vertice v2) {
+    return v1.x*v2.x + v1.y*v2.y;
+}
+
 void refleteBolinha(vertice verticeNormal)
 {
     vetor vetorNormal;
     vetorNormal.v1 = verticeNormal;
-    vetor refletido;
-    float produtoEscalar =  vetorMovimentoBolinha.v1.x*vetorNormal.v1.x +
-                            vetorMovimentoBolinha.v1.y*vetorNormal.v1.y;
+    float produtoEscalar = calculaProdutoEscalar(verticeNormal, vetorMovimentoBolinha.v1);
 
-    refletido.v1.x = 2*produtoEscalar*vetorNormal.v1.x - vetorMovimentoBolinha.v1.x;
-    refletido.v1.y = 2*produtoEscalar*vetorNormal.v1.y - vetorMovimentoBolinha.v1.y;
+    vetor refletido;
+    refletido.v1.x = vetorMovimentoBolinha.v1.x - 2*produtoEscalar*verticeNormal.x;
+    refletido.v1.y = vetorMovimentoBolinha.v1.y - 2*produtoEscalar*verticeNormal.y;
 
     vetorMovimentoBolinha = refletido;
 }
 
 void reflexaoBarra()
 {
-    if(/*xBolinha > 0.95 || */xBolinha < -0.95)
-        vetorMovimentoBolinha.v1.x *= -1;
-    if(yBolinha > 0.95)
-        vetorMovimentoBolinha.v1.y *= -1;
+    vertice vetorNormal;
+    vertice verticesBarraFaceSuperior[3] =  {{0.25 + xBarra, -0.625, 0.0625},
+                                            {0.25 + xBarra, -0.625, 0.125},
+                                            {-0.25 + xBarra, -0.625, 0.125}};
+
+    triangle t = {verticesBarraFaceSuperior[0], verticesBarraFaceSuperior[1], verticesBarraFaceSuperior[2]};
+    CalculaNormal(t, &vetorNormal);
     if(yBolinha < -0.60 && fabs(xBarra - xBolinha) < 0.4)
-        vetorMovimentoBolinha.v1.y *= -1;
+        refleteBolinha(vetorNormal);
 }
 void reflexaoBloquinhos()
 {
@@ -452,6 +458,13 @@ bool verificaColisaoX(vertice v) {
     return false;
 }
 
+bool verificaColisaoY(vertice v) {
+    if(fabs(v.y - yBolinha) < 0.1)
+        return true;
+
+    return false;
+}
+
 void desenhaPlataforma()
 {
     vertice vetorNormal;
@@ -524,6 +537,9 @@ void desenhaPlataforma()
         glVertex3f(faceEsquerda[i].x, faceEsquerda[i].y, faceEsquerda[i].z);
     }
     glEnd();
+    if(verificaColisaoX(faceEsquerda[0])) {
+        refleteBolinha(vetorNormal);
+    }
 
     setColor(0.6, 0.6, 0.9);
     glBegin(GL_QUADS);
@@ -534,6 +550,9 @@ void desenhaPlataforma()
         glVertex3f(faceSuperior[i].x, faceSuperior[i].y, faceSuperior[i].z);
     }
     glEnd();
+    if(verificaColisaoY(faceSuperior[0])) {
+        refleteBolinha(vetorNormal);
+    }
 }
 
 void desenhaBarra()
