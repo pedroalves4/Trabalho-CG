@@ -153,6 +153,7 @@ float calculaProdutoEscalar(vertice v1, vertice v2) {
     return v1.x*v2.x + v1.y*v2.y;
 }
 
+///R = I - 2*(N.I)*N
 void refleteBolinha(vertice verticeNormal)
 {
     vetor vetorNormal;
@@ -165,6 +166,9 @@ void refleteBolinha(vertice verticeNormal)
 
     vetorMovimentoBolinha = refletido;
 }
+
+ou usa gluperspective ou glortho (dentro da matriz de projecao, que vai ter um ou outro)
+
 
 void reflexaoBarra()
 {
