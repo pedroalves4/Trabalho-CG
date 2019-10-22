@@ -9,16 +9,20 @@
 
 1566924478 /ice/Downloads/D1_20193_Base/extras.h
 
-1568684007 source:/ice/Downloads/Trabalho-CG/main.cpp
+1571183367 source:/ice/Downloads/Trabalho-CG/main.cpp
 	<GL/glut.h>
 	<stdlib.h>
 	<stdio.h>
 	<ctype.h>
 	<math.h>
-	<GLFW/glfw3.h>
 	"extras.h"
+	<GL/glut.h>
+	<stdlib.h>
+	<stdio.h>
+	<ctype.h>
+	<math.h>
 
-1568678913 /ice/Downloads/Trabalho-CG/extras.h
+1571178524 /ice/Downloads/Trabalho-CG/extras.h
 
 1568684617 source:/ice/CG/Trabalho-CG/main.cpp
 	<GL/glut.h>

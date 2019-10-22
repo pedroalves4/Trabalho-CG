@@ -8,7 +8,7 @@
 #include "extras.h"
 
 /// Estruturas iniciais para armazenar vertices
-//  VocÃª poderÃ¡ utilizÃ¡-las adicionando novos mÃ©todos (de acesso por exemplo) ou usar suas prÃ³prias estruturas.
+//  Você poderá utilizá-las adicionando novos métodos (de acesso por exemplo) ou usar suas próprias estruturas.
 class vertice
 {
 public:
@@ -39,6 +39,11 @@ public:
     }
 };
 
+typedef struct
+{
+    float x, y;
+} vertex;
+
 
 /// Globals
 float zdist = 3.0;
@@ -57,29 +62,37 @@ float xBolinha = 0.0;
 float yBolinha = -0.56;
 float xSeta = 0.40;
 float ySeta = 0.0;
+float PI = 3.1415927;
+float raioTorus = 0.05;
 bool desenhaSetaControle = true;
 bool pintaPlataformaVermelho = false;
 vetor* vetorSeta = new vetor();
 barrinhas* vetorBloquinhos = new barrinhas[14];
 vetor vetorMovimentoBolinha;
 
+// círculo terá 36 vértices
+vertex v[36];
+
+void criaCirculo()
+{
+    float raio = 0.6;
+    int g, i;
+
+    for(i = 0; i < 18; i++)
+    {
+        g = i * 10; // anda no círculo de 10 em 10 graus (para cobrir os 360 graus)
+        v[i].x = raio * cos(g * PI / 180) + raioTorus;
+        v[i].y = raio * sin(g * PI / 180);
+    }
+}
+
 
 /// Functions
 void init(void)
 {
-    initLight(width, height); // FunÃ§Ã£o extra para tratar iluminaÃ§Ã£o.
+    initLight(width, height); // Função extra para tratar iluminação.
 }
 
-/* Exemplo de cÃ¡lculo de vetor normal que sÃ£o definidos a partir dos vÃ©rtices do triÃ¢ngulo;
-  v_2
-  ^
-  |\
-  | \
-  |  \       'vn' Ã© o vetor normal resultante
-  |   \
-  +----> v_1
-  v_0
-*/
 void CalculaNormal(triangle t, vertice *vn)
 {
     vertice v_0 = t.v[0],
@@ -113,8 +126,8 @@ void CalculaNormal(triangle t, vertice *vn)
 
 void atualizaVetorSeta()
 {
-    ySeta = sqrt(pow(0.40, 2) - pow(vetorSeta->v1.x, 2)); ///pitÃ¡goras: mantÃ©m o mÃ³dulo do vetor constante = 0.40
-    if(ySeta >= 0)     ///a bolinha nÃ£o deve comeÃ§ar indo pra baixo
+    ySeta = sqrt(pow(0.40, 2) - pow(vetorSeta->v1.x, 2)); ///pitágoras: mantém o módulo do vetor constante = 0.40
+    if(ySeta >= 0)     ///a bolinha não deve começar indo pra baixo
     {
         vetorSeta->v1.y = ySeta;
     }
@@ -454,6 +467,8 @@ bool verificaColisaoX(vertice v) {
 
 void desenhaPlataforma()
 {
+    float raio = 0.0;
+
     vertice vetorNormal;
     vertice base[4] = {{-1.0f, -1.0f,  0.0f},
         { 1.0f, -1.0f,  0.0f},
@@ -467,22 +482,117 @@ void desenhaPlataforma()
         { 1.0f, -1.0f,  0.25f}
     };
 
-    vertice faceEsquerda[4] = {{ -1.0f, -1.0f,  0.0f},
-        { -1.0f, 1.0f,  0.0f},
-        { -1.0f, 1.0f,  0.25f},
-        { -1.0f, -1.0f,  0.25f}
-    };
+    vertice faceEsquerdaInferior[9];
+    float xFaceEsquerdaInferior = -1.0f;
+    float yFaceEsquerdaInferior = -1.0f;
+    float zFaceEsquerdaInferior = 0.25f;
+    faceEsquerdaInferior[0] = {xFaceEsquerdaInferior, yFaceEsquerdaInferior, zFaceEsquerdaInferior};
+    for(int i = 1; i < 9; i++) {
+        if(i%2==0) {
+            zFaceEsquerdaInferior += 0.25f;
+        }
+        else {
+            zFaceEsquerdaInferior -= 0.25f;
+        }
+        faceEsquerdaInferior[i] = {xFaceEsquerdaInferior, yFaceEsquerdaInferior, zFaceEsquerdaInferior};
+
+        if(i == 1 || i== 6) {
+            yFaceEsquerdaInferior += 0.10;
+        }
+        else if(i == 7) {
+            continue;
+        }
+        else {
+            yFaceEsquerdaInferior += 0.05;
+        }
+    }
+
+    vertice faceEsquerdaSuperior[9];
+    float xFaceEsquerdaSuperior = -1.0f;
+    float yFaceEsquerdaSuperior = 0.6f;
+    float zFaceEsquerdaSuperior = 0.25f;
+    faceEsquerdaSuperior[0] = {xFaceEsquerdaSuperior, yFaceEsquerdaSuperior, zFaceEsquerdaSuperior};
+    for(int i = 1; i < 9; i++) {
+        if(i%2==0) {
+            zFaceEsquerdaSuperior += 0.25f;
+        }
+        else {
+            zFaceEsquerdaSuperior -= 0.25f;
+        }
+        faceEsquerdaSuperior[i] = {xFaceEsquerdaSuperior, yFaceEsquerdaSuperior, zFaceEsquerdaSuperior};
+
+        if(i == 1 || i== 6) {
+            yFaceEsquerdaSuperior += 0.10;
+        }
+        else if(i == 7) {
+            continue;
+        }
+        else {
+            yFaceEsquerdaSuperior += 0.05;
+        }
+    }
+
 
     vertice faceSuperior[4] = {{ -1.0f, 1.0f,  0.0f},
         {  1.0f, 1.0f,  0.0f},
         {  1.0f, 1.0f,  0.25f},
         { -1.0f, 1.0f,  0.25f}
     };
+    vertice faceEsquerdaBarriga[16] = {
+        { -1.0f, -1.0f,  0.0f},
+        { -1.0f, -0.6f, 0.0f},
+            { -0.85f, -0.36f, 0.00f},
+
+                { -0.8f, -0.12f, 0.00f},
+                {-0.8f, 0.12f, 0.00f},
+
+            { -0.85f, 0.36f, 0.0f},
+        { -1.0f, 0.6f, 0.0f},
+        { -1.0f, 1.0f, 0.0f},
 
 
 
-    triangle t[4] = {{base[0], base[1], base[3]},
-        {faceEsquerda[0], faceEsquerda[1], faceEsquerda[2]},
+        { -1.0f, -1.0f,  0.25f},
+        { -1.0f, -0.6f, 0.25f},
+
+            { -0.85f, -0.36f, 0.25f},
+
+                { -0.8f, -0.12f, 0.25f},
+                {-0.8f, 0.12f, 0.25f},
+
+            { -0.85f, 0.36f, 0.25f},
+
+        { -1.0f, 0.6f, 0.25f},
+        { -1.0f, 1.0f, 0.25f},
+    };
+
+
+    triangle t[25] = {{base[0], base[1], base[3]},
+        {faceEsquerdaInferior[0], faceEsquerdaInferior[1], faceEsquerdaInferior[2]},
+        {faceEsquerdaInferior[1], faceEsquerdaInferior[2], faceEsquerdaInferior[3]},
+        {faceEsquerdaInferior[2], faceEsquerdaInferior[3], faceEsquerdaInferior[4]},
+        {faceEsquerdaInferior[3], faceEsquerdaInferior[4], faceEsquerdaInferior[5]},
+        {faceEsquerdaInferior[4], faceEsquerdaInferior[5], faceEsquerdaInferior[6]},
+        {faceEsquerdaInferior[5], faceEsquerdaInferior[6], faceEsquerdaInferior[7]},
+
+        {faceEsquerdaSuperior[0], faceEsquerdaSuperior[1], faceEsquerdaSuperior[2]},  /// indice 7
+        {faceEsquerdaSuperior[1], faceEsquerdaSuperior[2], faceEsquerdaSuperior[3]},
+        {faceEsquerdaSuperior[2], faceEsquerdaSuperior[3], faceEsquerdaSuperior[4]},
+        {faceEsquerdaSuperior[3], faceEsquerdaSuperior[4], faceEsquerdaSuperior[5]},
+        {faceEsquerdaSuperior[4], faceEsquerdaSuperior[5], faceEsquerdaSuperior[6]},
+        {faceEsquerdaSuperior[5], faceEsquerdaSuperior[6], faceEsquerdaSuperior[7]},
+
+        {faceEsquerdaBarriga[1], faceEsquerdaBarriga[9], faceEsquerdaBarriga[2]},   /// indice 13
+        {faceEsquerdaBarriga[9], faceEsquerdaBarriga[2], faceEsquerdaBarriga[10]},
+        {faceEsquerdaBarriga[2], faceEsquerdaBarriga[10], faceEsquerdaBarriga[3]},
+        {faceEsquerdaBarriga[10], faceEsquerdaBarriga[3], faceEsquerdaBarriga[11]},
+        {faceEsquerdaBarriga[3], faceEsquerdaBarriga[11], faceEsquerdaBarriga[4]},
+        {faceEsquerdaBarriga[11], faceEsquerdaBarriga[4], faceEsquerdaBarriga[12]},
+        {faceEsquerdaBarriga[4], faceEsquerdaBarriga[12], faceEsquerdaBarriga[5]},
+        {faceEsquerdaBarriga[12], faceEsquerdaBarriga[5], faceEsquerdaBarriga[13]},
+        {faceEsquerdaBarriga[5], faceEsquerdaBarriga[13], faceEsquerdaBarriga[6]},
+        {faceEsquerdaBarriga[13], faceEsquerdaBarriga[6], faceEsquerdaBarriga[14]}, /// indice 22
+
         {faceDireita[0], faceDireita[1], faceDireita[2]},
         {faceSuperior[0], faceSuperior[1], faceSuperior[2]}
     };
@@ -504,7 +614,7 @@ void desenhaPlataforma()
 
     setColor(0.6, 0.6, 0.9);
     glBegin(GL_QUADS);
-    CalculaNormal(t[1], &vetorNormal);
+    CalculaNormal(t[23], &vetorNormal);
     glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
     for(int i=0; i < 4; i++)
     {
@@ -515,19 +625,77 @@ void desenhaPlataforma()
         refleteBolinha(vetorNormal);
     }
 
+
+    /// ---------------- FACE ESQUERDA ---------------
+    /// parte inferior
     setColor(0.6, 0.6, 0.9);
-    glBegin(GL_QUADS);
-    CalculaNormal(t[2], &vetorNormal);
-    glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-    for(int i=0; i < 4; i++)
-    {
-        glVertex3f(faceEsquerda[i].x, faceEsquerda[i].y, faceEsquerda[i].z);
+    glBegin(GL_TRIANGLE_STRIP);
+    for(int i = 1; i < 6; i++){
+        CalculaNormal(t[i], &vetorNormal);
+        glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+    }
+    for(int i = 0; i < 9; i++){
+        glVertex3f(faceEsquerdaInferior[i].x, faceEsquerdaInferior[i].y, faceEsquerdaInferior[i].z);
     }
     glEnd();
 
+    /// Barriga
+    for(int i =13; i < 23; i++){
+        CalculaNormal(t[i], &vetorNormal);
+        glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+    }
+   /* glBegin(GL_LINE_LOOP);
+    for(int i = 1; i < 7; i++){
+        glVertex3f(faceEsquerdaBarriga[i].x, faceEsquerdaBarriga[i].y, faceEsquerdaBarriga[i].z);
+    }
+    for(int i = 14; i > 8; i--){
+        glVertex3f(faceEsquerdaBarriga[i].x, faceEsquerdaBarriga[i].y, faceEsquerdaBarriga[i].z);
+    }
+    glEnd();*/
+
+    glBegin(GL_POLYGON); /// PREENCHE A PARTE DE FORA (RETA) DA BARRIGA
+        glVertex3f(faceEsquerdaBarriga[1].x, faceEsquerdaBarriga[1].y, faceEsquerdaBarriga[1].z);
+        glVertex3f(faceEsquerdaBarriga[6].x, faceEsquerdaBarriga[6].y, faceEsquerdaBarriga[6].z);
+        glVertex3f(faceEsquerdaBarriga[14].x, faceEsquerdaBarriga[14].y, faceEsquerdaBarriga[14].z);
+        glVertex3f(faceEsquerdaBarriga[9].x, faceEsquerdaBarriga[9].y, faceEsquerdaBarriga[9].z);
+    glEnd();
+
+    glBegin(GL_POLYGON); /// PREENCHE A TAMPA DA BARRIGA
+    for(int i = 9; i < 15; i++){
+        glVertex3f(faceEsquerdaBarriga[i].x, faceEsquerdaBarriga[i].y, faceEsquerdaBarriga[i].z);
+    }
+    glEnd();
+
+    glBegin(GL_TRIANGLE_STRIP); /// COSTURA OS TRIANGULOS
+        glVertex3f(faceEsquerdaBarriga[1].x, faceEsquerdaBarriga[1].y, faceEsquerdaBarriga[1].z);
+        glVertex3f(faceEsquerdaBarriga[9].x, faceEsquerdaBarriga[9].y, faceEsquerdaBarriga[9].z);
+        glVertex3f(faceEsquerdaBarriga[2].x, faceEsquerdaBarriga[2].y, faceEsquerdaBarriga[2].z);
+        glVertex3f(faceEsquerdaBarriga[10].x, faceEsquerdaBarriga[10].y, faceEsquerdaBarriga[10].z);
+        glVertex3f(faceEsquerdaBarriga[3].x, faceEsquerdaBarriga[3].y, faceEsquerdaBarriga[3].z);
+        glVertex3f(faceEsquerdaBarriga[11].x, faceEsquerdaBarriga[11].y, faceEsquerdaBarriga[11].z);
+        glVertex3f(faceEsquerdaBarriga[4].x, faceEsquerdaBarriga[4].y, faceEsquerdaBarriga[4].z);
+        glVertex3f(faceEsquerdaBarriga[12].x, faceEsquerdaBarriga[12].y, faceEsquerdaBarriga[12].z);
+        glVertex3f(faceEsquerdaBarriga[5].x, faceEsquerdaBarriga[5].y, faceEsquerdaBarriga[5].z);
+        glVertex3f(faceEsquerdaBarriga[13].x, faceEsquerdaBarriga[13].y, faceEsquerdaBarriga[13].z);
+        glVertex3f(faceEsquerdaBarriga[6].x, faceEsquerdaBarriga[6].y, faceEsquerdaBarriga[6].z);
+        glVertex3f(faceEsquerdaBarriga[14].x, faceEsquerdaBarriga[14].y, faceEsquerdaBarriga[14].z);
+    glEnd();
+
+    /// parte superior
+    glBegin(GL_TRIANGLE_STRIP);
+    for(int i = 7; i < 12; i++){
+        CalculaNormal(t[i], &vetorNormal);
+        glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+    }
+    for(int i = 0; i < 9; i++){
+        glVertex3f(faceEsquerdaSuperior[i].x, faceEsquerdaSuperior[i].y, faceEsquerdaSuperior[i].z);
+    }
+    glEnd();
+    ///--------FIM DA FACE ESQUERDA---------
+
     setColor(0.6, 0.6, 0.9);
     glBegin(GL_QUADS);
-    CalculaNormal(t[3], &vetorNormal); // Passa face triangular e endereÃ§o do vetor normal de saÃ­da
+    CalculaNormal(t[24], &vetorNormal); // Passa face triangular e endereço do vetor normal de saída
     glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
     for(int i=0; i < 4; i++)
     {
@@ -642,6 +810,30 @@ void desenhaBarra()
     glEnd();
 
     glPopMatrix();
+}
+
+void desenhaCilindro()
+{
+    float k = -4;
+
+    for(int j = 0; j<2; j++)
+    {
+        glBegin(GL_LINE_LOOP);
+        for(int i = 0; i < 18; i++)
+            glVertex3f (v[i].x - raioTorus, v[i].y, k);
+        glEnd();
+        glBegin(GL_LINES);
+        if(j!=1)
+        {
+            for(int i = 0; i < 18; i++)
+            {
+                glVertex3f (v[i].x - raioTorus, v[i].y, k);
+                glVertex3f (v[i].x - raioTorus, v[i].y, k+1);
+            }
+        }
+        glEnd();
+        k +=1;
+    }
 }
 
 
@@ -832,9 +1024,9 @@ void desenhaSeta()
 void drawObject()
 {
     desenhaPlataforma();
-    desenhaBarra();
-    //preencheVetorBarrinhas();
-    desenhaBarrinhasDeBater();
+    //desenhaBarra();
+    //desenhaCilindro();
+    //desenhaBarrinhasDeBater();
 
     desenhaBolinha();
     desenhaSeta();
@@ -866,6 +1058,7 @@ void display(void)
         }
 
         drawObject();
+
         glPopMatrix();
     }
 
