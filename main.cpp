@@ -162,28 +162,36 @@ vetor calculaProjecao(vetor u, vetor v)
     return projecao;
 }
 
+float calculaProdutoEscalar(vertice v1, vertice v2) {
+    return v1.x*v2.x + v1.y*v2.y;
+}
+
 void refleteBolinha(vertice verticeNormal)
 {
     vetor vetorNormal;
     vetorNormal.v1 = verticeNormal;
-    vetor refletido;
-    float produtoEscalar =  vetorMovimentoBolinha.v1.x*vetorNormal.v1.x +
-                            vetorMovimentoBolinha.v1.y*vetorNormal.v1.y;
 
-    refletido.v1.x = 2*produtoEscalar*vetorNormal.v1.x - vetorMovimentoBolinha.v1.x;
-    refletido.v1.y = 2*produtoEscalar*vetorNormal.v1.y - vetorMovimentoBolinha.v1.y;
+    float produtoEscalar = calculaProdutoEscalar(verticeNormal, vetorMovimentoBolinha.v1);
+
+    vetor refletido;
+    refletido.v1.x = vetorMovimentoBolinha.v1.x - 2*produtoEscalar*verticeNormal.x;
+    refletido.v1.y = vetorMovimentoBolinha.v1.y - 2*produtoEscalar*verticeNormal.y;
 
     vetorMovimentoBolinha = refletido;
 }
 
 void reflexaoBarra()
 {
-    if(/*xBolinha > 0.95 || */xBolinha < -0.95)
-        vetorMovimentoBolinha.v1.x *= -1;
-    if(yBolinha > 0.95)
-        vetorMovimentoBolinha.v1.y *= -1;
+    vertice vetorNormal;
+    vertice verticesBarraFaceSuperior[3] =  {{0.25 + xBarra, -0.625, 0.0625},
+                                            {0.25 + xBarra, -0.625, 0.125},
+                                            {-0.25 + xBarra, -0.625, 0.125}};
+
+    triangle t = {verticesBarraFaceSuperior[0], verticesBarraFaceSuperior[1], verticesBarraFaceSuperior[2]};
+    CalculaNormal(t, &vetorNormal);
+
     if(yBolinha < -0.60 && fabs(xBarra - xBolinha) < 0.4)
-        vetorMovimentoBolinha.v1.y *= -1;
+        refleteBolinha(vetorNormal);
 }
 void reflexaoBloquinhos()
 {
@@ -459,10 +467,11 @@ bool GameOver()
 }
 
 bool verificaColisaoX(vertice v) {
-    if(fabs(v.x - xBolinha) < 0.1)
-        return true;
+    return(fabs(v.x - xBolinha) < 0.1);
+}
 
-    return false;
+bool verificaColisaoY(vertice v) {
+    return (fabs(v.y - yBolinha) < 0.1);
 }
 
 void desenhaPlataforma()
@@ -644,14 +653,14 @@ void desenhaPlataforma()
         CalculaNormal(t[i], &vetorNormal);
         glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
     }
-   /* glBegin(GL_LINE_LOOP);
+    glBegin(GL_LINE_LOOP);
     for(int i = 1; i < 7; i++){
         glVertex3f(faceEsquerdaBarriga[i].x, faceEsquerdaBarriga[i].y, faceEsquerdaBarriga[i].z);
     }
     for(int i = 14; i > 8; i--){
         glVertex3f(faceEsquerdaBarriga[i].x, faceEsquerdaBarriga[i].y, faceEsquerdaBarriga[i].z);
     }
-    glEnd();*/
+    glEnd();
 
     glBegin(GL_POLYGON); /// PREENCHE A PARTE DE FORA (RETA) DA BARRIGA
         glVertex3f(faceEsquerdaBarriga[1].x, faceEsquerdaBarriga[1].y, faceEsquerdaBarriga[1].z);
@@ -702,11 +711,13 @@ void desenhaPlataforma()
         glVertex3f(faceSuperior[i].x, faceSuperior[i].y, faceSuperior[i].z);
     }
     glEnd();
+    if(verificaColisaoY(faceSuperior[0])) {
+        refleteBolinha(vetorNormal);
+    }
 }
 
 void desenhaBarra()
 {
-
     vertice vetorNormal;
     vertice barraFaceTampa[4] = {{-0.25 + xBarra, -0.75, 0.125},
         {0.25 + xBarra, -0.75, 0.125},
@@ -990,8 +1001,6 @@ void desenhaBarrinhasDeBater()
 
 }
 
-
-
 void desenhaBolinha()
 {
     if(!GameOver())
@@ -1024,9 +1033,8 @@ void desenhaSeta()
 void drawObject()
 {
     desenhaPlataforma();
-    //desenhaBarra();
-    //desenhaCilindro();
-    //desenhaBarrinhasDeBater();
+    desenhaBarra();
+    desenhaBarrinhasDeBater();
 
     desenhaBolinha();
     desenhaSeta();
