@@ -576,6 +576,43 @@ void desenhaPlataforma()
         }
     }
 
+    triangle trianguloBarrigaEsquerda[18];
+    for(int i = 0; i < 18; i++) {
+        trianguloBarrigaEsquerda[i] = {faceEsquerdaBarriga[i], faceEsquerdaBarriga[i+1], faceEsquerdaBarriga[i+2]};
+    }
+
+    vertice faceDireitaBarriga[20];
+    float passoXDir = 0.01f;
+    float passoYDir = 0.1333f;    /// 1.2/9
+    float xBarrigaDir = 1.0f;
+    float yBarrigaDir = -0.6f;
+    float zBarrigaDir= 0.0f;
+    int kDir = 4;
+    faceDireitaBarriga[0] = {xBarrigaDir, yBarrigaDir, zBarrigaDir};
+    for(int i = 1; i < 20; i++) {
+        if(i%2==0)  zBarrigaDir = 0.00f;
+        else        zBarrigaDir = 0.25f;
+
+        faceDireitaBarriga[i] = {xBarrigaDir, yBarrigaDir, zBarrigaDir};
+
+        if(i%2 != 0) {
+            if(i >= 9) {
+                xBarrigaDir += kDir*passoXDir;
+                kDir++;
+            }
+            else {
+                xBarrigaDir -= kDir*passoXDir;
+                kDir--;
+            }
+            yBarrigaDir += passoYDir;
+        }
+    }
+
+    triangle trianguloBarrigaDireita[18];
+    for(int i = 0; i < 18; i++) {
+        trianguloBarrigaDireita[i] = {faceDireitaBarriga[i], faceDireitaBarriga[i+1], faceDireitaBarriga[i+2]};
+    }
+
     triangle t[25] = {{base[0], base[1], base[3]},
         {faceEsquerdaInferior[0], faceEsquerdaInferior[1], faceEsquerdaInferior[2]},
         {faceEsquerdaInferior[1], faceEsquerdaInferior[2], faceEsquerdaInferior[3]},
@@ -648,24 +685,48 @@ void desenhaPlataforma()
     }
     glEnd();
 
-    /// Barriga
+    ///------BARRIGA ESQUERDA-----
+    for(int i = 1; i < 18; i++){    /// setta as normais
+        CalculaNormal(trianguloBarrigaEsquerda[i], &vetorNormal);
+        glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+    }
     glBegin(GL_TRIANGLE_STRIP); ///desenha a barriga já costurando os triângulos
     for(int i = 0; i < 20; i++){
         glVertex3f(faceEsquerdaBarriga[i].x, faceEsquerdaBarriga[i].y, faceEsquerdaBarriga[i].z);
     }
     glEnd();
 
-    glBegin(GL_POLYGON);
+    glBegin(GL_POLYGON);    /// Preenche a tampa da barriga
     for(int i = 1; i < 20; i+=2){
         glVertex3f(faceEsquerdaBarriga[i].x, faceEsquerdaBarriga[i].y, faceEsquerdaBarriga[i].z);
     }
     glEnd();
 
-    glBegin(GL_POLYGON);
+    glBegin(GL_POLYGON);    /// preenche a lateral de fora da barriga
         glVertex3f(faceEsquerdaBarriga[0].x, faceEsquerdaBarriga[0].y, faceEsquerdaBarriga[0].z);
         glVertex3f(faceEsquerdaBarriga[18].x, faceEsquerdaBarriga[18].y, faceEsquerdaBarriga[18].z);
         glVertex3f(faceEsquerdaBarriga[19].x, faceEsquerdaBarriga[19].y, faceEsquerdaBarriga[19].z);
         glVertex3f(faceEsquerdaBarriga[1].x, faceEsquerdaBarriga[1].y, faceEsquerdaBarriga[1].z);
+    glEnd();
+
+    ///------BARRIGA DIREITA-----
+    glBegin(GL_TRIANGLE_STRIP); ///desenha a barriga já costurando os triângulos
+    for(int i = 0; i < 20; i++){
+        glVertex3f(faceDireitaBarriga[i].x, faceDireitaBarriga[i].y, faceDireitaBarriga[i].z);
+    }
+    glEnd();
+
+    glBegin(GL_POLYGON);    /// Preenche a tampa da barriga
+    for(int i = 1; i < 20; i+=2){
+        glVertex3f(faceDireitaBarriga[i].x, faceDireitaBarriga[i].y, faceDireitaBarriga[i].z);
+    }
+    glEnd();
+
+    glBegin(GL_POLYGON);    /// preenche a lateral de fora da barriga
+        glVertex3f(faceDireitaBarriga[0].x, faceDireitaBarriga[0].y, faceDireitaBarriga[0].z);
+        glVertex3f(faceDireitaBarriga[18].x, faceDireitaBarriga[18].y, faceDireitaBarriga[18].z);
+        glVertex3f(faceDireitaBarriga[19].x, faceDireitaBarriga[19].y, faceDireitaBarriga[19].z);
+        glVertex3f(faceDireitaBarriga[1].x, faceDireitaBarriga[1].y, faceDireitaBarriga[1].z);
     glEnd();
 
     /// parte superior
