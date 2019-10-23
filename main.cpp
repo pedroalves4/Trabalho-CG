@@ -710,6 +710,10 @@ void desenhaPlataforma()
     glEnd();
 
     ///------BARRIGA DIREITA-----
+    for(int i = 1; i < 18; i++){    /// setta as normais
+        CalculaNormal(trianguloBarrigaDireita[i], &vetorNormal);
+        glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+    }
     glBegin(GL_TRIANGLE_STRIP); ///desenha a barriga já costurando os triângulos
     for(int i = 0; i < 20; i++){
         glVertex3f(faceDireitaBarriga[i].x, faceDireitaBarriga[i].y, faceDireitaBarriga[i].z);
