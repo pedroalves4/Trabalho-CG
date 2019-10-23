@@ -547,34 +547,34 @@ void desenhaPlataforma()
         {  1.0f, 1.0f,  0.25f},
         { -1.0f, 1.0f,  0.25f}
     };
-    vertice faceEsquerdaBarriga[16] = {
-        { -1.0f, -1.0f,  0.0f},
-        { -1.0f, -0.6f, 0.0f},
-            { -0.85f, -0.36f, 0.00f},
-
-                { -0.8f, -0.12f, 0.00f},
-                {-0.8f, 0.12f, 0.00f},
-
-            { -0.85f, 0.36f, 0.0f},
-        { -1.0f, 0.6f, 0.0f},
-        { -1.0f, 1.0f, 0.0f},
 
 
+    vertice faceEsquerdaBarriga[20];
+    float passoX = 0.01f;
+    float passoY = 0.1333f;    /// 1.2/9
+    float xBarriga = -1.0f;
+    float yBarriga = -0.6f;
+    float zBarriga = 0.0f;
+    int k = 4;
+    faceEsquerdaBarriga[0] = {xBarriga, yBarriga, zBarriga};
+    for(int i = 1; i < 20; i++) {
+        if(i%2==0)  zBarriga = 0.00f;
+        else        zBarriga = 0.25f;
 
-        { -1.0f, -1.0f,  0.25f},
-        { -1.0f, -0.6f, 0.25f},
+        faceEsquerdaBarriga[i] = {xBarriga, yBarriga, zBarriga};
 
-            { -0.85f, -0.36f, 0.25f},
-
-                { -0.8f, -0.12f, 0.25f},
-                {-0.8f, 0.12f, 0.25f},
-
-            { -0.85f, 0.36f, 0.25f},
-
-        { -1.0f, 0.6f, 0.25f},
-        { -1.0f, 1.0f, 0.25f},
-    };
-
+        if(i%2 != 0) {
+            if(i >= 9) {
+                xBarriga -= k*passoX;
+                k++;
+            }
+            else {
+                xBarriga += k*passoX;
+                k--;
+            }
+            yBarriga += passoY;
+        }
+    }
 
     triangle t[25] = {{base[0], base[1], base[3]},
         {faceEsquerdaInferior[0], faceEsquerdaInferior[1], faceEsquerdaInferior[2]},
@@ -649,45 +649,23 @@ void desenhaPlataforma()
     glEnd();
 
     /// Barriga
-    for(int i =13; i < 23; i++){
-        CalculaNormal(t[i], &vetorNormal);
-        glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-    }
-    glBegin(GL_LINE_LOOP);
-    for(int i = 1; i < 7; i++){
-        glVertex3f(faceEsquerdaBarriga[i].x, faceEsquerdaBarriga[i].y, faceEsquerdaBarriga[i].z);
-    }
-    for(int i = 14; i > 8; i--){
+    glBegin(GL_TRIANGLE_STRIP); ///desenha a barriga já costurando os triângulos
+    for(int i = 0; i < 20; i++){
         glVertex3f(faceEsquerdaBarriga[i].x, faceEsquerdaBarriga[i].y, faceEsquerdaBarriga[i].z);
     }
     glEnd();
 
-    glBegin(GL_POLYGON); /// PREENCHE A PARTE DE FORA (RETA) DA BARRIGA
+    glBegin(GL_POLYGON);
+    for(int i = 1; i < 20; i+=2){
+        glVertex3f(faceEsquerdaBarriga[i].x, faceEsquerdaBarriga[i].y, faceEsquerdaBarriga[i].z);
+    }
+    glEnd();
+
+    glBegin(GL_POLYGON);
+        glVertex3f(faceEsquerdaBarriga[0].x, faceEsquerdaBarriga[0].y, faceEsquerdaBarriga[0].z);
+        glVertex3f(faceEsquerdaBarriga[18].x, faceEsquerdaBarriga[18].y, faceEsquerdaBarriga[18].z);
+        glVertex3f(faceEsquerdaBarriga[19].x, faceEsquerdaBarriga[19].y, faceEsquerdaBarriga[19].z);
         glVertex3f(faceEsquerdaBarriga[1].x, faceEsquerdaBarriga[1].y, faceEsquerdaBarriga[1].z);
-        glVertex3f(faceEsquerdaBarriga[6].x, faceEsquerdaBarriga[6].y, faceEsquerdaBarriga[6].z);
-        glVertex3f(faceEsquerdaBarriga[14].x, faceEsquerdaBarriga[14].y, faceEsquerdaBarriga[14].z);
-        glVertex3f(faceEsquerdaBarriga[9].x, faceEsquerdaBarriga[9].y, faceEsquerdaBarriga[9].z);
-    glEnd();
-
-    glBegin(GL_POLYGON); /// PREENCHE A TAMPA DA BARRIGA
-    for(int i = 9; i < 15; i++){
-        glVertex3f(faceEsquerdaBarriga[i].x, faceEsquerdaBarriga[i].y, faceEsquerdaBarriga[i].z);
-    }
-    glEnd();
-
-    glBegin(GL_TRIANGLE_STRIP); /// COSTURA OS TRIANGULOS
-        glVertex3f(faceEsquerdaBarriga[1].x, faceEsquerdaBarriga[1].y, faceEsquerdaBarriga[1].z);
-        glVertex3f(faceEsquerdaBarriga[9].x, faceEsquerdaBarriga[9].y, faceEsquerdaBarriga[9].z);
-        glVertex3f(faceEsquerdaBarriga[2].x, faceEsquerdaBarriga[2].y, faceEsquerdaBarriga[2].z);
-        glVertex3f(faceEsquerdaBarriga[10].x, faceEsquerdaBarriga[10].y, faceEsquerdaBarriga[10].z);
-        glVertex3f(faceEsquerdaBarriga[3].x, faceEsquerdaBarriga[3].y, faceEsquerdaBarriga[3].z);
-        glVertex3f(faceEsquerdaBarriga[11].x, faceEsquerdaBarriga[11].y, faceEsquerdaBarriga[11].z);
-        glVertex3f(faceEsquerdaBarriga[4].x, faceEsquerdaBarriga[4].y, faceEsquerdaBarriga[4].z);
-        glVertex3f(faceEsquerdaBarriga[12].x, faceEsquerdaBarriga[12].y, faceEsquerdaBarriga[12].z);
-        glVertex3f(faceEsquerdaBarriga[5].x, faceEsquerdaBarriga[5].y, faceEsquerdaBarriga[5].z);
-        glVertex3f(faceEsquerdaBarriga[13].x, faceEsquerdaBarriga[13].y, faceEsquerdaBarriga[13].z);
-        glVertex3f(faceEsquerdaBarriga[6].x, faceEsquerdaBarriga[6].y, faceEsquerdaBarriga[6].z);
-        glVertex3f(faceEsquerdaBarriga[14].x, faceEsquerdaBarriga[14].y, faceEsquerdaBarriga[14].z);
     glEnd();
 
     /// parte superior
@@ -821,30 +799,6 @@ void desenhaBarra()
     glEnd();
 
     glPopMatrix();
-}
-
-void desenhaCilindro()
-{
-    float k = -4;
-
-    for(int j = 0; j<2; j++)
-    {
-        glBegin(GL_LINE_LOOP);
-        for(int i = 0; i < 18; i++)
-            glVertex3f (v[i].x - raioTorus, v[i].y, k);
-        glEnd();
-        glBegin(GL_LINES);
-        if(j!=1)
-        {
-            for(int i = 0; i < 18; i++)
-            {
-                glVertex3f (v[i].x - raioTorus, v[i].y, k);
-                glVertex3f (v[i].x - raioTorus, v[i].y, k+1);
-            }
-        }
-        glEnd();
-        k +=1;
-    }
 }
 
 
