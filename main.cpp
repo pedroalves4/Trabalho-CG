@@ -761,6 +761,65 @@ void desenhaPlataforma()
 
 void desenhaBarra()
 {
+    vertice barrigaRebatedor[20];
+    float passoX = 0.05555f;    /// 0.5/9
+    float passoY = 0.01f;
+    float xBarrigaRebatedor = -0.25f + xBarra;
+    float yBarrigaRebatedor = -0.625f;
+    float zBarrigaRebatedor = 0.0f;
+    int k = 4;
+    barrigaRebatedor[0] = {xBarrigaRebatedor, yBarrigaRebatedor, zBarrigaRebatedor};
+    for(int i = 1; i < 20; i++) {
+        if(i%2==0)  zBarrigaRebatedor = 0.00f;
+        else        zBarrigaRebatedor = 0.25f;
+
+        barrigaRebatedor[i] = {xBarrigaRebatedor, yBarrigaRebatedor, zBarrigaRebatedor};
+
+        if(i%2 != 0) {
+            if(i >= 9) {
+                yBarrigaRebatedor -= k*passoY;
+                k++;
+            }
+            else {
+                yBarrigaRebatedor += k*passoY;
+                k--;
+            }
+            xBarrigaRebatedor += passoX;
+        }
+    }
+
+    setColor(1.0, 0.3, 0.3);
+    glBegin(GL_TRIANGLE_STRIP); ///desenha a barriga já costurando os triângulos
+    for(int i = 0; i < 20; i++){
+        glVertex3f(barrigaRebatedor[i].x, barrigaRebatedor[i].y, barrigaRebatedor[i].z);
+    }
+    glEnd();
+
+    glBegin(GL_POLYGON);    /// Preenche a tampa da barriga
+    for(int i = 1; i < 20; i+=2){
+        glVertex3f(barrigaRebatedor[i].x, barrigaRebatedor[i].y, barrigaRebatedor[i].z);
+    }
+    glEnd();
+
+    glBegin(GL_POLYGON);    /// preenche a lateral de fora da barriga
+        glVertex3f(barrigaRebatedor[0].x, barrigaRebatedor[0].y, barrigaRebatedor[0].z);
+        glVertex3f(barrigaRebatedor[18].x, barrigaRebatedor[18].y, barrigaRebatedor[18].z);
+        glVertex3f(barrigaRebatedor[19].x, barrigaRebatedor[19].y, barrigaRebatedor[19].z);
+        glVertex3f(barrigaRebatedor[1].x, barrigaRebatedor[1].y, barrigaRebatedor[1].z);
+    glEnd();
+
+    triangle triangulosBarrigaRebatedor[18];
+    for(int i = 0; i < 18; i++) {
+        triangulosBarrigaRebatedor[i] = {barrigaRebatedor[i], barrigaRebatedor[i+1], barrigaRebatedor[i+2]};
+    }
+
+    vertice vetorNormal;
+    for(int i = 1; i < 18; i++){    /// setta as normais
+        CalculaNormal(triangulosBarrigaRebatedor[i], &vetorNormal);
+        glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+    }
+
+    /*
     vertice vetorNormal;
     vertice barraFaceTampa[4] = {{-0.25 + xBarra, -0.75, 0.125},
         {0.25 + xBarra, -0.75, 0.125},
@@ -863,7 +922,7 @@ void desenhaBarra()
     }
     glEnd();
 
-    glPopMatrix();
+    glPopMatrix();*/
 }
 
 
