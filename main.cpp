@@ -151,17 +151,6 @@ float calculaModuloVetor(vetor v)
     return modulo;
 }
 
-///Proj U em V = (u.v/|v|Â²)*V
-vetor calculaProjecao(vetor u, vetor v)
-{
-    vetor projecao;
-    float prodEscalar = u.v1.x * v.v1.x + u.v1.y * v.v1.y;
-    float somaQuadradoDasComponentes = pow(v.v1.x, 2) + pow(v.v1.y, 2);
-    projecao.v1.x = (prodEscalar/somaQuadradoDasComponentes)*v.v1.x;
-    projecao.v1.y = (prodEscalar/somaQuadradoDasComponentes)*v.v1.y;
-    return projecao;
-}
-
 float calculaProdutoEscalar(vertice v1, vertice v2) {
     return v1.x*v2.x + v1.y*v2.y;
 }
@@ -474,6 +463,14 @@ bool verificaColisaoY(vertice v) {
     return (fabs(v.y - yBolinha) < 0.1);
 }
 
+bool verificaColisaoTriangulo(triangle t) {
+    float xBaricentro = (t.v[0].x + t.v[1].x + t.v[2].x)/3;
+    float yBaricentro = (t.v[0].y + t.v[1].y + t.v[2].y)/3;
+    float somaDosQuadrados = pow(xBolinha - xBaricentro, 2.0) + pow(yBolinha - yBaricentro, 2.0);
+    float distancia = sqrt(somaDosQuadrados);
+    return (distancia < 0.1);
+}
+
 void desenhaPlataforma()
 {
     float raio = 0.0;
@@ -608,9 +605,9 @@ void desenhaPlataforma()
         }
     }
 
-    triangle trianguloBarrigaDireita[18];
+    triangle triangulosBarrigaDireita[18];
     for(int i = 0; i < 18; i++) {
-        trianguloBarrigaDireita[i] = {faceDireitaBarriga[i], faceDireitaBarriga[i+1], faceDireitaBarriga[i+2]};
+        triangulosBarrigaDireita[i] = {faceDireitaBarriga[i], faceDireitaBarriga[i+1], faceDireitaBarriga[i+2]};
     }
 
     triangle t[25] = {{base[0], base[1], base[3]},
@@ -689,6 +686,9 @@ void desenhaPlataforma()
     for(int i = 1; i <= 18; i++){    /// setta as normais
         CalculaNormal(trianguloBarrigaEsquerda[i], &vetorNormal);
         glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+        if(verificaColisaoTriangulo(trianguloBarrigaEsquerda[i]) && vetorMovimentoBolinha.v1.x*vetorNormal.x < 1) {
+            refleteBolinha(vetorNormal);
+        }
     }
     glBegin(GL_TRIANGLE_STRIP); ///desenha a barriga já costurando os triângulos
     for(int i = 0; i < 20; i++){
@@ -712,8 +712,11 @@ void desenhaPlataforma()
     ///------BARRIGA DIREITA-----
      glBegin(GL_TRIANGLE_STRIP);
     for(int i = 1; i <= 18; i++){    /// setta as normais
-        CalculaNormal(trianguloBarrigaDireita[i], &vetorNormal);
+        CalculaNormal(triangulosBarrigaDireita[i], &vetorNormal);
         glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+        if(verificaColisaoTriangulo(triangulosBarrigaDireita[i]) && vetorMovimentoBolinha.v1.x*vetorNormal.x < 1) {
+            refleteBolinha(vetorNormal);
+        }
     }
     ///desenha a barriga já costurando os triângulos
     for(int i = 0; i < 20; i++){
@@ -760,7 +763,7 @@ void desenhaPlataforma()
     }
 }
 
-void desenhaBarra()
+void desenhaRebatedor()
 {
     vertice barrigaRebatedor[20];
     float passoX = 0.05555f;    /// 0.5/9
@@ -819,111 +822,6 @@ void desenhaBarra()
         CalculaNormal(triangulosBarrigaRebatedor[i], &vetorNormal);
         glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
     }
-
-    /*
-    vertice vetorNormal;
-    vertice barraFaceTampa[4] = {{-0.25 + xBarra, -0.75, 0.125},
-        {0.25 + xBarra, -0.75, 0.125},
-        {0.25 + xBarra, -0.625, 0.125},
-        {-0.25 + xBarra, -0.625, 0.125}
-    };
-
-    vertice barraFaceBase[4] = {{-0.25 + xBarra, -0.625, 0.0625},
-        {-0.25 + xBarra, -0.75, 0.0625},
-        {0.25 + xBarra, -0.75, 0.0625},
-        {0.25 + xBarra, -0.625, 0.0625}
-    };
-
-    vertice barraFaceDireita[4] = {{0.25 + xBarra, -0.75, 0.0625},
-        {0.25 + xBarra, -0.625, 0.0625},
-        {0.25 + xBarra, -0.625, 0.125},
-        {0.25 + xBarra, -0.75, 0.125}
-    };
-
-    vertice barraFaceSuperior[4] = {{0.25 + xBarra, -0.625, 0.0625},
-        {0.25 + xBarra, -0.625, 0.125},
-        {-0.25 + xBarra, -0.625, 0.125},
-        {-0.25 + xBarra, -0.625, 0.0625}
-    };
-
-    vertice barraFaceEsquerda[4] = {{-0.25 + xBarra, -0.75, 0.0625},
-        {-0.25 + xBarra, -0.625, 0.0625},
-        {-0.25 + xBarra, -0.625, 0.125},
-        {-0.25 + xBarra, -0.75, 0.125}
-    };
-
-    vertice barraFaceInferior[4] = {{0.25 + xBarra, -0.75, 0.0625},
-        {0.25 + xBarra, -0.75, 0.125},
-        {-0.25 + xBarra, -0.75, 0.125},
-        {-0.25 + xBarra, -0.75, 0.0625}
-    };
-
-    triangle t[6] = {{barraFaceTampa[0], barraFaceTampa[1], barraFaceTampa[2]},
-        {barraFaceBase[0], barraFaceBase[1], barraFaceBase[2]},
-        {barraFaceDireita[0], barraFaceDireita[1], barraFaceDireita[2]},
-        {barraFaceSuperior[0], barraFaceSuperior[1], barraFaceSuperior[2]},
-        {barraFaceEsquerda[0], barraFaceEsquerda[1], barraFaceEsquerda[2]},
-        {barraFaceInferior[0], barraFaceInferior[1], barraFaceInferior[2]}
-    };
-
-
-    setColor(0.1, 0.9, 0.1);
-    glPushMatrix();
-    glBegin(GL_QUADS);
-    CalculaNormal(t[0], &vetorNormal);
-    glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-    for(int i=0; i < 4; i++)
-    {
-        glVertex3f(barraFaceTampa[i].x, barraFaceTampa[i].y, barraFaceTampa[i].z);
-    }
-    glEnd();
-
-    glBegin(GL_QUADS);
-    CalculaNormal(t[1], &vetorNormal);
-    glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-    for(int i=0; i < 4; i++)
-    {
-        glVertex3f(barraFaceBase[i].x, barraFaceBase[i].y, barraFaceBase[i].z);
-    }
-    glEnd();
-
-    glBegin(GL_QUADS);
-    CalculaNormal(t[2], &vetorNormal);
-    glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-    for(int i=0; i < 4; i++)
-    {
-        glVertex3f(barraFaceDireita[i].x, barraFaceDireita[i].y, barraFaceDireita[i].z);
-    }
-    glEnd();
-
-    glBegin(GL_QUADS);
-    CalculaNormal(t[3], &vetorNormal);
-    glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-    for(int i=0; i < 4; i++)
-    {
-        glVertex3f(barraFaceSuperior[i].x, barraFaceSuperior[i].y, barraFaceSuperior[i].z);
-    }
-    glEnd();
-
-    glBegin(GL_QUADS);
-    CalculaNormal(t[4], &vetorNormal);
-    glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-    for(int i=0; i < 4; i++)
-    {
-        glVertex3f(barraFaceEsquerda[i].x, barraFaceEsquerda[i].y, barraFaceEsquerda[i].z);
-    }
-    glEnd();
-
-    glBegin(GL_QUADS);
-    CalculaNormal(t[5], &vetorNormal);
-    glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-    for(int i=0; i < 4; i++)
-    {
-        glVertex3f(barraFaceInferior[i].x, barraFaceInferior[i].y, barraFaceInferior[i].z);
-    }
-    glEnd();
-
-    glPopMatrix();*/
 }
 
 
@@ -1112,7 +1010,7 @@ void desenhaSeta()
 void drawObject()
 {
     desenhaPlataforma();
-    desenhaBarra();
+    desenhaRebatedor();
     desenhaBarrinhasDeBater();
 
     desenhaBolinha();
@@ -1318,8 +1216,8 @@ void mouse(int button, int state, int x, int y)
             if(button ==  GLUT_LEFT_BUTTON)
             {
                 desenhaSetaControle = false;
-                vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/110;
-                vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/110;
+                vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/150;
+                vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/150;
                 primeiroLancamento = true;
 
             }
