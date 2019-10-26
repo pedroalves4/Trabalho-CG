@@ -635,17 +635,6 @@ void desenhaPlataforma()
         {faceEsquerdaSuperior[4], faceEsquerdaSuperior[5], faceEsquerdaSuperior[6]},
         {faceEsquerdaSuperior[5], faceEsquerdaSuperior[6], faceEsquerdaSuperior[7]},
 
-        {faceEsquerdaBarriga[1], faceEsquerdaBarriga[9], faceEsquerdaBarriga[2]},   /// indice 13
-        {faceEsquerdaBarriga[9], faceEsquerdaBarriga[2], faceEsquerdaBarriga[10]},
-        {faceEsquerdaBarriga[2], faceEsquerdaBarriga[10], faceEsquerdaBarriga[3]},
-        {faceEsquerdaBarriga[10], faceEsquerdaBarriga[3], faceEsquerdaBarriga[11]},
-        {faceEsquerdaBarriga[3], faceEsquerdaBarriga[11], faceEsquerdaBarriga[4]},
-        {faceEsquerdaBarriga[11], faceEsquerdaBarriga[4], faceEsquerdaBarriga[12]},
-        {faceEsquerdaBarriga[4], faceEsquerdaBarriga[12], faceEsquerdaBarriga[5]},
-        {faceEsquerdaBarriga[12], faceEsquerdaBarriga[5], faceEsquerdaBarriga[13]},
-        {faceEsquerdaBarriga[5], faceEsquerdaBarriga[13], faceEsquerdaBarriga[6]},
-        {faceEsquerdaBarriga[13], faceEsquerdaBarriga[6], faceEsquerdaBarriga[14]}, /// indice 22
-
         {faceDireita[0], faceDireita[1], faceDireita[2]},
         {faceSuperior[0], faceSuperior[1], faceSuperior[2]}
     };
@@ -667,7 +656,7 @@ void desenhaPlataforma()
 
     setColor(0.6, 0.6, 0.9);
     glBegin(GL_QUADS);
-    CalculaNormal(t[23], &vetorNormal);
+    CalculaNormal(t[13], &vetorNormal);
     glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
     for(int i=0; i < 4; i++)
     {
@@ -773,7 +762,7 @@ void desenhaPlataforma()
 
     setColor(0.6, 0.6, 0.9);
     glBegin(GL_QUADS);
-    CalculaNormal(t[24], &vetorNormal); // Passa face triangular e endereço do vetor normal de saída
+    CalculaNormal(t[14], &vetorNormal); // Passa face triangular e endereço do vetor normal de saída
     glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
     for(int i=0; i < 4; i++)
     {
