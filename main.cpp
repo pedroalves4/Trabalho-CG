@@ -51,6 +51,7 @@ float rotationX = 0.0, rotationY = 0.0;
 float rotacaoX = 0.0, rotacaoY = 0.0;
 int   last_x, last_y;
 int   width, height;
+int  vidasRestantes = 5;
 bool pausado = false;
 bool projecao_ortogonal = true;
 bool rotacaoLiberada = false;
@@ -428,7 +429,6 @@ void preencheVetorBarrinhas()
 void restart()
 {
     pintaPlataformaVermelho = false;
-    preencheVetorBarrinhas();
     xBarra = 0;
     xBolinha = 0;
     yBolinha = yBolinhaInicial;
@@ -436,6 +436,14 @@ void restart()
     vetorMovimentoBolinha.v1.y = 0;
     desenhaSetaControle = true;
     primeiroLancamento = false;
+
+    if(vidasRestantes == 1) {
+        preencheVetorBarrinhas();
+        vidasRestantes = 5;
+    }
+    else {
+        vidasRestantes--;
+    }
 }
 
 bool GameOver()
@@ -994,6 +1002,15 @@ void desenhaBarrinhasDeBater()
 
 }
 
+void desenhaVidas() {
+    setColor(1.0, 0.0, 0.0);
+    glTranslatef(-0.95, 1.3, 0.25);
+    for(int i = 0; i < vidasRestantes; i++) {
+        glutSolidSphere(0.08, 20, 20);
+        glTranslatef(0.5, 0, 0);
+    }
+}
+
 void desenhaBolinha()
 {
     if(!GameOver())
@@ -1031,6 +1048,7 @@ void drawObject()
 
     desenhaBolinha();
     desenhaSeta();
+    desenhaVidas();
 }
 
 void display(void)
@@ -1079,7 +1097,7 @@ void display(void)
     glutSwapBuffers();
     moveBolinha();
     reflexaoBarra();
-    //reflexaoBloquinhos();
+    reflexaoBloquinhos();
 }
 
 void idle ()
