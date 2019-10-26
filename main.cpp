@@ -58,6 +58,7 @@ bool rotacaoLiberada = false;
 bool podeMoverABolinha = false;
 bool primeiroLancamento = false;
 int janela = 0;
+int fase = 3;
 float xBarra = 0.0;
 float xBolinha = 0.0;
 float yBolinhaInicial = -0.45;
@@ -69,7 +70,7 @@ float raioTorus = 0.05;
 bool desenhaSetaControle = true;
 bool pintaPlataformaVermelho = false;
 vetor* vetorSeta = new vetor();
-barrinhas* vetorBloquinhos = new barrinhas[14];
+barrinhas* vetorBloquinhos = new barrinhas[15];
 vetor vetorMovimentoBolinha;
 
 // círculo terá 36 vértices
@@ -128,7 +129,7 @@ void CalculaNormal(triangle t, vertice *vn)
 
 void atualizaVetorSeta()
 {
-    ySeta = sqrt(pow(0.40, 2) - pow(vetorSeta->v1.x, 2)); ///pitágoras: mantém o módulo do vetor constante = 0.40
+    ySeta = sqrt(pow(0.60, 2) - pow(vetorSeta->v1.x, 2)); ///pitágoras: mantém o módulo do vetor constante = 0.40
     if(ySeta >= 0)     ///a bolinha não deve começar indo pra baixo
     {
         vetorSeta->v1.y = ySeta;
@@ -184,6 +185,7 @@ void reflexaoBarra()
     if(yBolinha < -0.60 && fabs(xBarra - xBolinha) < 0.4)
         refleteBolinha(vetorNormal);
 }
+
 void reflexaoBloquinhos()
 {
     if(xBolinha > -0.97 && xBolinha < -0.63)
@@ -423,6 +425,24 @@ void preencheVetorBarrinhas()
     for(int i=0; i < 15; i++)
     {
         vetorBloquinhos[i].mostra = true;
+    }
+}
+
+bool verificaPassouDeFase() {
+    for(int i=0; i < 15; i++)
+    {
+        if(vetorBloquinhos[i].mostra = true)
+            return false;
+    }
+    return true;
+}
+
+void passaDeFase() {
+    if(verificaPassouDeFase()) {
+        if(fase < 3)
+            fase++;
+        else
+            fase = 1;
     }
 }
 
@@ -786,7 +806,7 @@ void desenhaRebatedor()
     barrigaRebatedor[0] = {xBarrigaRebatedor, yBarrigaRebatedor, zBarrigaRebatedor};
     for(int i = 1; i < 20; i++) {
         if(i%2==0)  zBarrigaRebatedor = 0.00f;
-        else        zBarrigaRebatedor = 0.25f;
+        else        zBarrigaRebatedor = 0.15f;
 
         barrigaRebatedor[i] = {xBarrigaRebatedor, yBarrigaRebatedor, zBarrigaRebatedor};
 
@@ -850,7 +870,7 @@ void desenhaBarrinhasDeBater()
     float inicioh = 0.90;
     float fimh = 0.775;
 
-    while(linhas < 3)
+    while(linhas < fase)
     {
         colunas = 0;
         inicio = -0.95;
@@ -895,12 +915,13 @@ void desenhaBarrinhasDeBater()
                 {fim, inicioh, 0.0625}
             };
 
-            triangle t[6] = {{barraFaceTampa[0], barraFaceTampa[1], barraFaceTampa[2]},
+            triangle t[7] = {{barraFaceTampa[0], barraFaceTampa[1], barraFaceTampa[2]},
                 {barraFaceBase[0], barraFaceBase[1], barraFaceBase[2]},
                 {barraFaceDireita[0], barraFaceDireita[1], barraFaceDireita[2]},
                 {barraFaceSuperior[0], barraFaceSuperior[1], barraFaceSuperior[2]},
                 {barraFaceEsquerda[0], barraFaceEsquerda[1], barraFaceEsquerda[2]},
-                {barraFaceInferior[0], barraFaceInferior[1], barraFaceInferior[2]}
+                {barraFaceInferior[0], barraFaceInferior[1], barraFaceInferior[2]},
+                {barraFaceInferior[2], barraFaceInferior[3], barraFaceInferior[0]}
             };
 
 
@@ -1038,6 +1059,7 @@ void drawObject()
     desenhaBolinha();
     desenhaSeta();
     desenhaVidas();
+    passaDeFase();
 }
 
 void display(void)
@@ -1195,6 +1217,7 @@ void motionBarra(int x, int y)
         xBarra = (float)x/250 - 2;
         if(xBarra >= -1.0 && xBarra <= 1.0)
         {
+
             if(!primeiroLancamento)
             {
                 xBolinha = (float)x/250 - 2;
@@ -1203,7 +1226,6 @@ void motionBarra(int x, int y)
     }
 
 }
-
 
 
 // Mouse callback
@@ -1215,23 +1237,22 @@ void mouse(int button, int state, int x, int y)
             last_x = x;
             last_y = y;
         }
-        if(button == 3) // Scroll up
+        if(button == 4) // Scroll up
         {
-            if(xSeta <= 0.40)
+            if(xSeta <= 0.60)
             {
                 xSeta += 0.05;
                 atualizaVetorSeta();
             }
         }
-        if(button == 4) // Scroll Down
+        if(button == 3) // Scroll Down
         {
-            if(xSeta >= -0.40)
+            if(xSeta >= -0.60)
             {
                 xSeta -= 0.05;
                 atualizaVetorSeta();
             }
         }
-
 
     if(!pausado)
     {
@@ -1242,7 +1263,6 @@ void mouse(int button, int state, int x, int y)
                 vetorMovimentoBolinha.v1.x = vetorSeta->v1.x/150;
                 vetorMovimentoBolinha.v1.y = vetorSeta->v1.y/150;
                 primeiroLancamento = true;
-
             }
         }
     }
