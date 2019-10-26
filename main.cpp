@@ -59,7 +59,8 @@ bool primeiroLancamento = false;
 int janela = 0;
 float xBarra = 0.0;
 float xBolinha = 0.0;
-float yBolinha = -0.56;
+float yBolinhaInicial = -0.45;
+float yBolinha = yBolinhaInicial;
 float xSeta = 0.40;
 float ySeta = 0.0;
 float PI = 3.1415927;
@@ -430,7 +431,7 @@ void restart()
     preencheVetorBarrinhas();
     xBarra = 0;
     xBolinha = 0;
-    yBolinha = -0.56;
+    yBolinha = yBolinhaInicial;
     vetorMovimentoBolinha.v1.x = 0;
     vetorMovimentoBolinha.v1.y = 0;
     desenhaSetaControle = true;
@@ -468,7 +469,7 @@ bool verificaColisaoTriangulo(triangle t) {
     float yBaricentro = (t.v[0].y + t.v[1].y + t.v[2].y)/3;
     float somaDosQuadrados = pow(xBolinha - xBaricentro, 2.0) + pow(yBolinha - yBaricentro, 2.0);
     float distancia = sqrt(somaDosQuadrados);
-    return (distancia < 0.1);
+    return (distancia < 0.07);
 }
 
 void desenhaPlataforma()
@@ -488,6 +489,13 @@ void desenhaPlataforma()
         { 1.0f, -1.0f,  0.25f}
     };
 
+    vertice faceSuperior[4] = {{ -1.0f, 1.0f,  0.0f},
+        {  1.0f, 1.0f,  0.0f},
+        {  1.0f, 1.0f,  0.25f},
+        { -1.0f, 1.0f,  0.25f}
+    };
+
+    ///ESTRUTURAS FACE ESQUERDA - INICIO
     vertice faceEsquerdaInferior[9];
     float xFaceEsquerdaInferior = -1.0f;
     float yFaceEsquerdaInferior = -1.0f;
@@ -538,14 +546,6 @@ void desenhaPlataforma()
         }
     }
 
-
-    vertice faceSuperior[4] = {{ -1.0f, 1.0f,  0.0f},
-        {  1.0f, 1.0f,  0.0f},
-        {  1.0f, 1.0f,  0.25f},
-        { -1.0f, 1.0f,  0.25f}
-    };
-
-
     vertice faceEsquerdaBarriga[20];
     float passoX = 0.01f;
     float passoY = 0.1333f;    /// 1.2/9
@@ -577,6 +577,8 @@ void desenhaPlataforma()
     for(int i = 0; i < 18; i++) {
         trianguloBarrigaEsquerda[i] = {faceEsquerdaBarriga[i], faceEsquerdaBarriga[i+1], faceEsquerdaBarriga[i+2]};
     }
+    ///ESTRUTURAS FACE ESQUERDA - FIM
+
 
     vertice faceDireitaBarriga[20];
     float passoXDir = 0.01f;
@@ -676,13 +678,31 @@ void desenhaPlataforma()
     for(int i = 1; i < 6; i++){
         CalculaNormal(t[i], &vetorNormal);
         glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+        if(verificaColisaoTriangulo(t[i])) {
+            refleteBolinha(vetorNormal);
+        }
     }
     for(int i = 0; i < 9; i++){
         glVertex3f(faceEsquerdaInferior[i].x, faceEsquerdaInferior[i].y, faceEsquerdaInferior[i].z);
     }
     glEnd();
 
-    ///------BARRIGA ESQUERDA-----
+    /// parte superior
+    glBegin(GL_TRIANGLE_STRIP);
+    for(int i = 7; i < 12; i++){
+        CalculaNormal(t[i], &vetorNormal);
+        glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+        if(verificaColisaoTriangulo(t[i])) {
+            refleteBolinha(vetorNormal);
+        }
+    }
+    for(int i = 0; i < 9; i++){
+        glVertex3f(faceEsquerdaSuperior[i].x, faceEsquerdaSuperior[i].y, faceEsquerdaSuperior[i].z);
+    }
+    glEnd();
+
+
+    /// barriga esquerda
     for(int i = 1; i <= 18; i++){    /// setta as normais
         CalculaNormal(trianguloBarrigaEsquerda[i], &vetorNormal);
         glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
@@ -708,10 +728,13 @@ void desenhaPlataforma()
         glVertex3f(faceEsquerdaBarriga[19].x, faceEsquerdaBarriga[19].y, faceEsquerdaBarriga[19].z);
         glVertex3f(faceEsquerdaBarriga[1].x, faceEsquerdaBarriga[1].y, faceEsquerdaBarriga[1].z);
     glEnd();
+    ///--------FIM DA FACE ESQUERDA---------
+
+
 
     ///------BARRIGA DIREITA-----
      glBegin(GL_TRIANGLE_STRIP);
-    for(int i = 1; i <= 18; i++){    /// setta as normais
+    for(int i = 1; i <= 18; i++){
         CalculaNormal(triangulosBarrigaDireita[i], &vetorNormal);
         glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
         if(verificaColisaoTriangulo(triangulosBarrigaDireita[i]) && vetorMovimentoBolinha.v1.x*vetorNormal.x < 1) {
@@ -736,18 +759,9 @@ void desenhaPlataforma()
         glVertex3f(faceDireitaBarriga[19].x, faceDireitaBarriga[19].y, faceDireitaBarriga[19].z);
         glVertex3f(faceDireitaBarriga[1].x, faceDireitaBarriga[1].y, faceDireitaBarriga[1].z);
     glEnd();
+    ///------FIM DA BARRIGA DIREITA-----
 
-    /// parte superior
-    glBegin(GL_TRIANGLE_STRIP);
-    for(int i = 7; i < 12; i++){
-        CalculaNormal(t[i], &vetorNormal);
-        glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
-    }
-    for(int i = 0; i < 9; i++){
-        glVertex3f(faceEsquerdaSuperior[i].x, faceEsquerdaSuperior[i].y, faceEsquerdaSuperior[i].z);
-    }
-    glEnd();
-    ///--------FIM DA FACE ESQUERDA---------
+
 
     setColor(0.6, 0.6, 0.9);
     glBegin(GL_QUADS);
@@ -818,9 +832,11 @@ void desenhaRebatedor()
     }
 
     vertice vetorNormal;
-    for(int i = 1; i < 18; i++){    /// setta as normais
+    for(int i = 1; i <= 18; i++){    /// setta as normais
         CalculaNormal(triangulosBarrigaRebatedor[i], &vetorNormal);
         glNormal3f(vetorNormal.x, vetorNormal.y,vetorNormal.z);
+        if(verificaColisaoTriangulo(triangulosBarrigaRebatedor[i]))
+            refleteBolinha(vetorNormal);
     }
 }
 
@@ -1063,7 +1079,7 @@ void display(void)
     glutSwapBuffers();
     moveBolinha();
     reflexaoBarra();
-    reflexaoBloquinhos();
+    //reflexaoBloquinhos();
 }
 
 void idle ()
