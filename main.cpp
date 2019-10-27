@@ -76,20 +76,6 @@ vetor vetorMovimentoBolinha;
 // círculo terá 36 vértices
 vertex v[36];
 
-void criaCirculo()
-{
-    float raio = 0.6;
-    int g, i;
-
-    for(i = 0; i < 18; i++)
-    {
-        g = i * 10; // anda no círculo de 10 em 10 graus (para cobrir os 360 graus)
-        v[i].x = raio * cos(g * PI / 180) + raioTorus;
-        v[i].y = raio * sin(g * PI / 180);
-    }
-}
-
-
 /// Functions
 void init(void)
 {
@@ -140,10 +126,8 @@ void moveBolinha()
 {
     if(!pausado)
     {
-
-            xBolinha += vetorMovimentoBolinha.v1.x;
-            yBolinha += vetorMovimentoBolinha.v1.y;
-
+        xBolinha += vetorMovimentoBolinha.v1.x;
+        yBolinha += vetorMovimentoBolinha.v1.y;
     }
 }
 
@@ -170,20 +154,6 @@ void refleteBolinha(vertice verticeNormal)
     refletido.v1.y = vetorMovimentoBolinha.v1.y - 2*produtoEscalar*verticeNormal.y;
 
     vetorMovimentoBolinha = refletido;
-}
-
-void reflexaoBarra()
-{
-    vertice vetorNormal;
-    vertice verticesBarraFaceSuperior[3] =  {{0.25 + xBarra, -0.625, 0.0625},
-                                            {0.25 + xBarra, -0.625, 0.125},
-                                            {-0.25 + xBarra, -0.625, 0.125}};
-
-    triangle t = {verticesBarraFaceSuperior[0], verticesBarraFaceSuperior[1], verticesBarraFaceSuperior[2]};
-    CalculaNormal(t, &vetorNormal);
-
-    if(yBolinha < -0.60 && fabs(xBarra - xBolinha) < 0.4)
-        refleteBolinha(vetorNormal);
 }
 
 void reflexaoBloquinhos()
@@ -233,7 +203,6 @@ void reflexaoBloquinhos()
             }
         }
     }
-
 
     if(xBolinha > -0.57 && xBolinha < -0.23 )
     {
@@ -422,31 +391,34 @@ void reflexaoBloquinhos()
 
 void preencheVetorBarrinhas()
 {
-    for(int i=0; i < 15; i++)
+    for(int i=0; i < 5; i++)
     {
         vetorBloquinhos[i].mostra = true;
+    }
+
+    for(int i=5; i < 10; i++)
+    {
+        if(fase >= 1)
+            vetorBloquinhos[i].mostra = true;
+    }
+
+    for(int i=10; i < 15; i++)
+    {
+        if(fase == 3)
+            vetorBloquinhos[i].mostra = true;
     }
 }
 
 bool verificaPassouDeFase() {
     for(int i=0; i < 15; i++)
     {
-        if(vetorBloquinhos[i].mostra = true)
+        if(vetorBloquinhos[i].mostra)
             return false;
     }
     return true;
 }
 
-void passaDeFase() {
-    if(verificaPassouDeFase()) {
-        if(fase < 3)
-            fase++;
-        else
-            fase = 1;
-    }
-}
-
-void restart()
+void restart(bool PassouDeFase = false)
 {
     pintaPlataformaVermelho = false;
     xBarra = 0;
@@ -457,12 +429,28 @@ void restart()
     desenhaSetaControle = true;
     primeiroLancamento = false;
 
-    if(vidasRestantes == 1) {
-        preencheVetorBarrinhas();
-        vidasRestantes = 5;
+    if(!PassouDeFase) {
+        if(vidasRestantes == 1) {
+            preencheVetorBarrinhas();
+            vidasRestantes = 5;
+            fase = 1;
     }
-    else {
-        vidasRestantes--;
+        else {
+            vidasRestantes--;
+        }
+    }
+
+}
+
+void passaDeFase() {
+    if(verificaPassouDeFase()) {
+        if(fase < 3)
+            fase++;
+        else
+            fase = 1;
+
+        preencheVetorBarrinhas();
+        restart(true);
     }
 }
 
@@ -1107,7 +1095,6 @@ void display(void)
     }
     glutSwapBuffers();
     moveBolinha();
-    reflexaoBarra();
     reflexaoBloquinhos();
 }
 
