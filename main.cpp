@@ -58,7 +58,7 @@ bool rotacaoLiberada = false;
 bool podeMoverABolinha = false;
 bool primeiroLancamento = false;
 int janela = 0;
-int fase = 3;
+int fase = 1;
 float xBarra = 0.0;
 float xBolinha = 0.0;
 float yBolinhaInicial = -0.45;
@@ -1213,14 +1213,17 @@ void motion(int x, int y )
 
 void motionBarra(int x, int y)
 {
-    if(!pausado){
-        xBarra = (float)x/250 - 2;
-        if(xBarra >= -1.0 && xBarra <= 1.0)
+    float posicaoX = (float)x/250 - 2;
+
+    if(!pausado)
+    {
+        if(posicaoX < 0.80 && posicaoX > -0.80)
         {
+            xBarra = posicaoX;
 
             if(!primeiroLancamento)
             {
-                xBolinha = (float)x/250 - 2;
+                xBolinha = posicaoX;
             }
         }
     }
